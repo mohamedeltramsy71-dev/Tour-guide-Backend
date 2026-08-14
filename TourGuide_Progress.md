@@ -3,22 +3,7 @@
 
 ---
 
-## 🚨 تعليمات للشات الجديد
-> لما تفتح شات جديد مع كلود، ابدأ بالكلام ده:
-
-**"احنا بنكمل مشروع TourGuide Backend، هنمسك [اسم الـ Feature] ونخلصها كاملة. الـ Feature دي محتاجة:**
-1. DTOs في `TourGuide.Application/DTOs/[Feature]/`
-2. Interface في `TourGuide.Application/Interfaces/`
-3. Service في `TourGuide.Application/Services/`
-4. Controller في `TourGuide.API/Controllers/`
-5. تسجيل الـ DI في `ServiceCollectionExtensions.cs`
-6. التأكد إن كل حاجة شغالة في Swagger
-
-**مش هنسيب الـ Feature دي غير لما تظهر في Swagger وتشتغل."**
-
----
-
-## 🗂️ Project Structure (ما اتعمل لحد دلوقتي)
+## 🗂️ Project Structure
 
 ```
 TourGuide.sln
@@ -155,8 +140,6 @@ TourGuide.sln
 │   │   ├── ReviewService.cs          ✅
 │   │   ├── NotificationService.cs    ✅
 │   │   └── AdminService.cs           ✅
-│   ├── Validators                    ⬜
-│   └── Mapping                       ⬜
 │
 ├── TourGuide.Infrastructure
 │   ├── Data
@@ -228,193 +211,206 @@ TourGuide.sln
 | 00 | Solution & Project Setup | ✅ Done | |
 | 01 | Domain — Entities | ✅ Done | 15 entities |
 | 02 | Domain — Enums | ✅ Done | 5 enums |
-| 03 | Domain — Interfaces (IRepository, IUnitOfWork) | ✅ Done | |
+| 03 | Domain — Interfaces | ✅ Done | IRepository, IUnitOfWork, IChatRepository |
 | 04 | Domain — Exceptions | ✅ Done | 4 exceptions |
 | 05 | Infrastructure — AppDbContext + Configurations | ✅ Done | 9 configurations |
 | 06 | Infrastructure — Generic Repository + UnitOfWork | ✅ Done | |
-| 07 | Infrastructure — Identity Setup | ✅ Done | |
+| 07 | Infrastructure — Identity Setup | ✅ Done | Roles + Admin seeder |
 | 08 | Infrastructure — JWT Generation | ✅ Done | implements IJwtService |
-| 09 | Infrastructure — Email Service (MailKit) | ✅ Done | implements IEmailService ⏳ Gmail Step 29 |
-| 10 | Infrastructure — Cloudinary Service | ✅ Done | implements ICloudinaryService ⏳ Keys Step 29 |
-| 11 | Infrastructure — Paymob Service | ✅ Done | ⏳ Keys + ngrok Step 29 |
+| 09 | Infrastructure — Email Service | ✅ Done | Gmail SMTP ✅ |
+| 10 | Infrastructure — Cloudinary Service | ✅ Done | Cloudinary keys ✅ |
+| 11 | Infrastructure — Paymob Service | ✅ Done | Paymob Sandbox keys ✅ |
 | 12 | Infrastructure — SignalR Hubs | ✅ Done | ChatHub + NotificationHub |
-| 13 | Auth — DTOs + Interface + Service + Controller | ✅ Done | 9 endpoints في Swagger ✅ |
-| 14 | User — DTOs + Interface + Service + Controller | ✅ Done | 3 endpoints في Swagger ✅ |
-| 15 | Cities & Landmarks — DTOs + Service + Controller | ✅ Done | 6 + 7 endpoints في Swagger ✅ |
-| 16 | Guide — DTOs + Service + Controller | ✅ Done | 4 endpoints في Swagger ✅ |
-| 17 | Packages — DTOs + Service + Controller | ✅ Done | 11 endpoints في Swagger ✅ |
-| 18 | Custom Trip — DTOs + Service + Controller | ✅ Done | 3 endpoints في Swagger ✅ |
-| 19 | Bookings — DTOs + Service + Controller | ✅ Done | 9 endpoints في Swagger ✅ |
-| 20 | Payment — DTOs + Service + Controller | ✅ Done | 3 endpoints في Swagger ✅ |
-| 21 | Chat — DTOs + Service + Controller + Hub | ✅ Done | 3 endpoints في Swagger ✅ |
-| 22 | Reviews — DTOs + Service + Controller | ✅ Done | 4 endpoints في Swagger ✅ |
-| 23 | Notifications — DTOs + Service + Controller | ✅ Done | 4 endpoints في Swagger ✅ |
-| 24 | Admin Dashboard — DTOs + Service + Controller | ✅ Done | 15 endpoints في Swagger ✅ |
-| 25 | API — Global Exception Middleware | ✅ Done | GlobalExceptionHandler + RequestLoggingMiddleware |
-| 26 | API — DI Registration + Program.cs | ✅ Done | SignalR Hub mapping + CORS + JWT ✅ |
-| 27 | API — Swagger + JWT + CORS Config | ✅ Done | Swagger JWT Bearer + CORS في Program.cs ✅ |
-| 28 | EF Core — Migrations + Seed Data | ✅ Done | InitialCreate + Update-Database ✅ |
-| 29 | Testing & Verification | ⬜ Not Started | ⏳ Gmail + Cloudinary + Paymob + ngrok |
+| 13 | Auth | ✅ Done | 9 endpoints — Register ✅ Login ✅ Email Confirm ✅ |
+| 14 | User | ✅ Done | 3 endpoints — Avatar Upload ✅ |
+| 15 | Cities & Landmarks | ✅ Done | 6 + 7 endpoints |
+| 16 | Guide | ✅ Done | 4 endpoints |
+| 17 | Packages | ✅ Done | 11 endpoints |
+| 18 | Custom Trip | ✅ Done | 3 endpoints |
+| 19 | Bookings | ✅ Done | 9 endpoints |
+| 20 | Payment | ✅ Done | 3 endpoints — ⏳ ngrok webhook test |
+| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub |
+| 22 | Reviews | ✅ Done | 4 endpoints |
+| 23 | Notifications | ✅ Done | 4 endpoints |
+| 24 | Admin Dashboard | ✅ Done | 15 endpoints |
+| 25 | API — Global Exception Middleware | ✅ Done | |
+| 26 | API — DI Registration + Program.cs | ✅ Done | |
+| 27 | API — Swagger + JWT + CORS | ✅ Done | |
+| 28 | EF Core — Migrations + Seed Data | ✅ Done | TourGuideDb ✅ |
+| 29 | Testing & Verification | 🔄 In Progress | Paymob webhook ⏳ |
 
 ---
 
-## 🔄 الـ Feature Checklist (لكل شات جديد)
-> كل feature لازم تخلص كل الخطوات دي قبل ما نعدي للـ feature التانية:
+## 🔑 External Services Config
 
-- [ ] DTOs (Request + Response) في `Application/DTOs/[Feature]/`
-- [ ] Interface في `Application/Interfaces/I[Feature]Service.cs`
-- [ ] Service في `Application/Services/[Feature]Service.cs`
-- [ ] Controller في `API/Controllers/[Feature]Controller.cs`
-- [ ] تسجيل الـ DI في `ServiceCollectionExtensions.cs`
-- [ ] Build ✅ بدون errors
-- [ ] ظهور الـ endpoints في Swagger ✅
-- [ ] تحديث ملف الـ Progress ✅
-
----
-
-## ⏳ Pending External Config (هيتعمل في Step 29)
-
-| Service | ما محتاجه | ملاحظة |
-|---------|-----------|--------|
-| Gmail SMTP | Username + App Password | EmailService جاهز |
-| Cloudinary | CloudName + ApiKey + ApiSecret | CloudinaryService جاهز |
-| Paymob | ApiKey + IntegrationId + IframeId + HmacSecret | PaymobService جاهز |
-| Google OAuth | ClientId | JwtService جاهز |
+| Service | Status | Notes |
+|---------|--------|-------|
+| Gmail SMTP | ✅ Done | mohamedeltramsy71@gmail.com |
+| Cloudinary | ✅ Done | Cloud: dp1po0xxf |
+| Google OAuth | ✅ Done | Client ID configured |
+| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 |
 
 ---
 
 ## 📋 Detailed Steps Log
 
-### 00 — Solution & Project Setup ✅
-- [x] Create solution `TourGuide.sln`
-- [x] Create 4 projects: Domain, Application, Infrastructure, API
-- [x] Add project references: API → Infrastructure → Application → Domain
-- [x] Install NuGet packages per project
-- [x] Setup `appsettings.json` keys
-
----
-
 ### 01 — Domain — Entities ✅
-- [x] `ApplicationUser`, `RefreshToken`, `GuideProfile`, `City`, `GuideCity`
-- [x] `Landmark`, `LandmarkImage`, `Package`, `PackageImage`, `PackageLandmark`
-- [x] `Booking`, `Payment`, `Message`, `Review`, `Notification`
+- [x] `ApplicationUser` (extends IdentityUser) — FullName, Bio, Phone, AvatarUrl, IsDeleted, IsBanned
+- [x] `RefreshToken` — Token, ExpiresAt, IsRevoked, UserId
+- [x] `GuideProfile` — Bio, ExperienceYears, AverageRating, IsApproved, IsSuspended, LanguagesJson
+- [x] `City` — NameAr, NameEn, Description, ImageUrl, IsDeleted
+- [x] `GuideCity` — composite key (GuideProfileId, CityId)
+- [x] `Landmark` — NameAr, NameEn, Category, EntryFee, CityId, IsDeleted
+- [x] `LandmarkImage` — ImageUrl, PublicId, LandmarkId
+- [x] `Package` — Title, Price, DurationDays, MaxPersons, CityId, GuideProfileId, IsDeleted
+- [x] `PackageImage` — ImageUrl, PublicId, PackageId
+- [x] `PackageLandmark` — composite key (PackageId, LandmarkId), DayNumber, Order
+- [x] `Booking` — StartDate, NumberOfPersons, TotalPrice, Status, PaymentStatus, IsCustom
+- [x] `Payment` — PaymobOrderId, PaymobTransactionId, Amount, Status, BookingId
+- [x] `Message` — Content, IsRead, SenderId, BookingId
+- [x] `Review` — Rating (1-5), Comment, TouristId, GuideProfileId, BookingId
+- [x] `Notification` — Message, Type, IsRead, UserId, BookingId
 
 ---
 
 ### 02 — Domain — Enums ✅
-- [x] `UserRole`, `BookingStatus`, `PaymentStatus`, `LandmarkCategory`, `NotificationType`
+- [x] `UserRole` — Tourist, Guide, Admin
+- [x] `BookingStatus` — Pending, Confirmed, Rejected, Cancelled, Completed
+- [x] `PaymentStatus` — Unpaid, Paid, Failed
+- [x] `LandmarkCategory` — Historical, Entertainment, Nature, Religious, Beach, Museum
+- [x] `NotificationType` — NewBooking, BookingAccepted, BookingRejected, PaymentConfirmed, NewMessage, GuideApproved, TripReminder
 
 ---
 
 ### 03 — Domain — Interfaces ✅
-- [x] `IRepository<T>`, `IUnitOfWork`, `IChatRepository`
+- [x] `IRepository<T>` — GetById, GetAll, Find, FindOne, Add, Update, Delete, Exists, Count
+- [x] `IUnitOfWork` — Repository<T>(), SaveChangesAsync()
+- [x] `IChatRepository` — custom chat queries
 
 ---
 
 ### 04 — Domain — Exceptions ✅
-- [x] `NotFoundException`, `UnauthorizedException`, `BusinessRuleException`, `ConflictException`
+- [x] `NotFoundException` — 404
+- [x] `UnauthorizedException` — 401
+- [x] `BusinessRuleException` — 400
+- [x] `ConflictException` — 409
 
 ---
 
 ### 05 — Infrastructure — AppDbContext + Configurations ✅
-- [x] `AppDbContext.cs` — DbSets + ApplyConfigurationsFromAssembly
-- [x] 9 Configurations: Booking, GuideCity, PackageLandmark, Landmark, Package, Review, Message, Notification, Payment
+- [x] `AppDbContext` extends `IdentityDbContext<ApplicationUser>`
+- [x] `ApplyConfigurationsFromAssembly` — كل الـ configurations تتحمل أوتوماتيك
+- [x] Soft delete query filters: ApplicationUser, City, Landmark, Package
+- [x] 9 Entity Configurations: Booking, GuideCity, PackageLandmark, Landmark, Package, Review, Message, Notification, Payment
 
 ---
 
 ### 06 — Infrastructure — Repository + UnitOfWork ✅
-- [x] `GenericRepository<T>`, `UnitOfWork`, `ChatRepository`
+- [x] `GenericRepository<T>` — implements IRepository<T> with EF Core
+- [x] `ChatRepository` — custom queries للـ chat
+- [x] `UnitOfWork` — Dictionary of repositories + SaveChangesAsync
 
 ---
 
 ### 07 — Infrastructure — Identity Setup ✅
-- [x] `IdentitySeeder` — Roles + Admin (admin@tourguide.com / Admin@123456)
+- [x] `IdentitySeeder` — Seed Roles: Tourist, Guide, Admin
+- [x] Default Admin: admin@tourguide.com / Admin@123456
 
 ---
 
 ### 08 — Infrastructure — JWT Generation ✅
-- [x] `JwtSettings`, `JwtService : IJwtService`
-- [x] GenerateAccessTokenAsync, GenerateRefreshToken
+- [x] `JwtSettings` — Key, Issuer, Audience, AccessTokenExpiryMinutes (15), RefreshTokenExpiryDays (7)
+- [x] `JwtService : IJwtService`
+  - `GenerateAccessTokenAsync` — claims: UserId, Email, Role, FullName, IsApproved
+  - `GenerateRefreshToken` — random base64 + expiry
 
 ---
 
 ### 09 — Infrastructure — Email Service ✅
-- [x] `EmailSettings`, `EmailService : IEmailService`
-- [x] Templates: Confirmation, Reset, Rejection, Approval
-- [ ] ⏳ Gmail credentials — Step 29
+- [x] `EmailSettings` — Host, Port, Username, Password, From
+- [x] `EmailService : IEmailService` — MailKit SMTP + StartTls
+- [x] Templates: Confirmation, Reset Password, Guide Rejection, Guide Approval
+- [x] Gmail configured ✅ — tested ✅
 
 ---
 
 ### 10 — Infrastructure — Cloudinary Service ✅
-- [x] `CloudinarySettings`, `CloudinaryService : ICloudinaryService`
-- [x] UploadImageAsync, DeleteImageAsync
-- [ ] ⏳ Cloudinary keys — Step 29
+- [x] `CloudinarySettings` — CloudName, ApiKey, ApiSecret
+- [x] `CloudinaryService : ICloudinaryService`
+  - `UploadImageAsync` — IFormFile + folder + UseFilename + UniqueFilename
+  - `DeleteImageAsync` — extract publicId from URL + destroy
+- [x] Cloudinary configured ✅ — tested ✅ (avatar upload working)
 
 ---
 
 ### 11 — Infrastructure — Paymob Service ✅
-- [x] `PaymobSettings`, `PaymobService`
-- [x] GetAuthTokenAsync, CreateOrderAsync, GetPaymentKeyAsync, ValidateHmac
-- [ ] ⏳ Paymob keys + ngrok — Step 29
+- [x] `PaymobSettings` — ApiKey, IntegrationId, IframeId, HmacSecret
+- [x] `PaymobService`
+  - `GetAuthTokenAsync`
+  - `CreateOrderAsync` — amount in cents + currency
+  - `GetPaymentKeyAsync` — auth token + order + billing data
+  - `ValidateHmac` — HMAC-SHA512 webhook validation
+- [x] Paymob Sandbox configured ✅ — Integration: 5853399, Iframe: 1069052
+- [ ] ⏳ Webhook test with ngrok
 
 ---
 
 ### 12 — Infrastructure — SignalR Hubs ✅
-- [x] `ChatHub` — SendMessage, MarkAsRead, Presence
-- [x] `NotificationHub` — push via IHubContext
-- [x] MapHub في Program.cs: /hubs/chat + /hubs/notifications
+- [x] `ChatHub`
+  - `OnConnectedAsync` — add to personal group + booking groups
+  - `OnDisconnectedAsync` — broadcast UserOffline
+  - `SendMessage` — save to DB + push to booking group
+  - `MarkAsRead` — set IsRead = true
+- [x] `NotificationHub` — push via `IHubContext<NotificationHub>`
+- [x] Mapped: `/hubs/chat` + `/hubs/notifications`
 
 ---
 
 ### 13 — Auth ✅
-- [x] DTOs: RegisterRequest, LoginRequest, LoginResponse, GoogleAuthRequest
-- [x] DTOs: ForgetPasswordRequest, ResetPasswordRequest, RefreshTokenRequest, ChangePasswordRequest
-- [x] `IAuthService`, `IJwtService`, `IEmailService`, `ICloudinaryService` interfaces
-- [x] `AuthService` implementation
+- [x] DTOs: RegisterRequest, LoginRequest, LoginResponse, GoogleAuthRequest, ForgetPasswordRequest, ResetPasswordRequest, RefreshTokenRequest, ChangePasswordRequest
+- [x] `IAuthService` interface
+- [x] `AuthService` — Register, Login, GoogleLogin, ConfirmEmail, ForgetPassword, ResetPassword, RefreshToken, Logout, ChangePassword
 - [x] `AuthController` — 9 endpoints
-- [x] Build ✅ — Swagger ✅
-- [ ] ⏳ تيست Register + Login + Confirm Email — Step 29
+- [x] Tested ✅ — Register + Email Confirmation + Login working
 
 ---
 
 ### 14 — User ✅
 - [x] DTOs: UserDto, UpdateProfileRequest, AvatarResponse, PaginatedUsersRequest
 - [x] `IUserService`, `UserService`
-- [x] `UsersController` — 3 endpoints (me, update, avatar)
-- [x] Build ✅ — Swagger ✅
+- [x] `UsersController` — GET /api/users/me, PUT /api/users/me, PUT /api/users/me/avatar
+- [x] Avatar upload to Cloudinary tested ✅
 
 ---
 
 ### 15 — Cities & Landmarks ✅
 - [x] DTOs: CityDto, CreateCityRequest, UpdateCityRequest, LandmarkDto, CreateLandmarkRequest, UpdateLandmarkRequest, LandmarkFilterParams
-- [x] `ICityService`, `CityService`, `CitiesController` — 6 endpoints
-- [x] `ILandmarkService`, `LandmarkService`, `LandmarksController` — 7 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `ICityService`, `CityService`, `CitiesController` — 6 endpoints (CRUD + trending)
+- [x] `ILandmarkService`, `LandmarkService`, `LandmarksController` — 7 endpoints (CRUD + images)
+- [x] Filter params: cityId, category, minRating, maxPrice, search, sortBy, sortDir, page, pageSize
 
 ---
 
 ### 16 — Guide ✅
 - [x] DTOs: GuideProfileDto, UpdateGuideRequest, GuideListDto
 - [x] `IGuideService`, `GuideService`
-- [x] `GuidesController` — 4 endpoints
-- [x] Admin endpoints → AdminController
-- [x] Build ✅ — Swagger ✅
+- [x] `GuidesController` — 4 endpoints (me, update, public profile, all guides)
+- [x] Admin endpoints (pending, approve, reject, suspend) → AdminController
 
 ---
 
 ### 17 — Packages ✅
 - [x] DTOs: PackageDto, CreatePackageRequest, UpdatePackageRequest, AddLandmarkToPackage, PackageFilterParams
 - [x] `IPackageService`, `PackageService`
-- [x] `PackagesController` — 11 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `PackagesController` — 11 endpoints (CRUD + toggle + landmarks + images + compare)
 
 ---
 
 ### 18 — Custom Trip ✅
 - [x] DTOs: CalculatePriceRequest, CalculatePriceResponse, AvailableGuidesRequest, CreateCustomTripRequest
 - [x] `ICustomTripService`, `CustomTripService`
-- [x] `CustomTripsController` — 3 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `CustomTripsController` — 3 endpoints (calculate, available-guides, create)
+- [x] Price = Sum(landmark.EntryFee) × numberOfPersons × durationMultiplier + guideFixedFee
 
 ---
 
@@ -422,24 +418,25 @@ TourGuide.sln
 - [x] DTOs: BookingDto, CreateBookingRequest, RejectBookingRequest, BookingFilterParams
 - [x] `IBookingService`, `BookingService`
 - [x] `BookingsController` — 9 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] Status flow: Pending → Confirmed/Rejected/Cancelled → Completed
 
 ---
 
 ### 20 — Payment ✅
 - [x] DTOs: InitiatePaymentRequest, InitiatePaymentResponse, PaymentStatusDto, PaymobWebhookDto
 - [x] `IPaymentService`, `IPaymobService`, `PaymentService`
-- [x] `PaymentsController` — 3 endpoints
-- [x] Build ✅ — Swagger ✅
-- [ ] ⏳ تيست مع Paymob keys + ngrok — Step 29
+- [x] `PaymentsController` — 3 endpoints (initiate, webhook, status)
+- [x] 10-step Paymob flow implemented
+- [x] HMAC-SHA512 webhook validation
+- [ ] ⏳ End-to-end test with ngrok
 
 ---
 
 ### 21 — Chat ✅
 - [x] DTOs: MessageDto, ConversationDto, SendMessageRequest
 - [x] `IChatRepository`, `ChatRepository`, `IChatService`, `ChatService`
-- [x] `ChatController` — 3 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `ChatController` — 3 endpoints (conversations, messages, unread-count)
+- [x] SignalR: per-booking groups, real-time push, presence
 
 ---
 
@@ -447,89 +444,91 @@ TourGuide.sln
 - [x] DTOs: CreateReviewRequest, UpdateReviewRequest, ReviewDto
 - [x] `IReviewService`, `ReviewService`
 - [x] `ReviewsController` — 4 endpoints
-- [x] Admin endpoints → AdminController
-- [x] Build ✅ — Swagger ✅
+- [x] Business rules: only after Completed booking, one review per booking
+- [x] Auto-recalculate GuideProfile.AverageRating on every change
 
 ---
 
 ### 23 — Notifications ✅
 - [x] DTOs: NotificationDto
 - [x] `INotificationService`, `NotificationService`
-- [x] `NotificationsController` — 4 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `NotificationsController` — 4 endpoints (list, mark-read, mark-all-read, count)
+- [x] Real-time push via IHubContext<NotificationHub>
+- [x] Triggers: NewBooking, BookingAccepted, BookingRejected, PaymentConfirmed, NewMessage, GuideApproved, TripReminder
 
 ---
 
 ### 24 — Admin Dashboard ✅
 - [x] DTOs: DashboardSummaryDto, BookingsReportDto, RevenueReportDto, TopCityDto, TopLandmarkDto, GuidePerformanceDto, UserGrowthDto
 - [x] `IAdminService`, `AdminService`
-- [x] `AdminController` — 15 endpoints
-- [x] Build ✅ — Swagger ✅
+- [x] `AdminController` — 15 endpoints:
+  - GET /api/admin/dashboard
+  - GET /api/admin/reports/bookings, revenue, top-cities, top-landmarks, guides, users
+  - GET/PUT /api/admin/guides/pending, approve, reject, suspend
+  - GET/PUT /api/admin/users, users/{id}/ban
+  - GET/DELETE /api/admin/reviews, reviews/{id}
 
 ---
 
 ### 25 — API — Global Exception Middleware ✅
-- [x] `GlobalExceptionHandler` — catches Domain exceptions → standard ApiResponse
-- [x] `RequestLoggingMiddleware` — logs method, path, status, duration
-- [x] Registered في Program.cs
+- [x] `GlobalExceptionHandler` — maps Domain exceptions to HTTP status codes
+- [x] `RequestLoggingMiddleware` — logs method, path, status code, duration
 
 ---
 
 ### 26 — API — DI Registration + Program.cs ✅
-- [x] `ServiceCollectionExtensions` — كل الـ services مسجلين
-- [x] JWT Authentication + Authorization
-- [x] CORS — AllowCredentials للـ SignalR
-- [x] SignalR — AddSignalR() + MapHub
+- [x] `ServiceCollectionExtensions` — AddDatabase, AddIdentityConfig, AddSettings, AddInfrastructureServices, AddRepositories, AddAuthServices, AddApplicationServices
+- [x] JWT Bearer Authentication
+- [x] CORS — AllowCredentials (for SignalR)
+- [x] SignalR — AddSignalR() + MapHub<ChatHub> + MapHub<NotificationHub>
 - [x] Swagger + JWT Bearer button
-- [x] Middleware pipeline كامل
-- [x] IdentitySeeder في startup
-- [x] MapHub<ChatHub>("/hubs/chat")
-- [x] MapHub<NotificationHub>("/hubs/notifications")
+- [x] IdentitySeeder on startup
 
 ---
 
 ### 27 — API — Swagger + JWT + CORS ✅
-- [x] Swagger JWT Bearer button
-- [x] CORS policy مع AllowCredentials
+- [x] Swagger JWT Bearer button (Authorize)
+- [x] CORS — WithOrigins("http://localhost:4200") + AllowCredentials
+- [x] All endpoints visible in Swagger UI ✅
 
 ---
 
 ### 28 — EF Core Migrations ✅
-- [x] `Add-Migration InitialCreate`
-- [x] `Update-Database` — TourGuideDb اتعملت بنجاح
-- [x] Seed Roles (Tourist, Guide, Admin) + Admin user
+- [x] `InitialCreate` migration
+- [x] `Update-Database` — TourGuideDb created on DESKTOP-09JL97C\SQLEXPRESS
+- [x] Seed: Tourist, Guide, Admin roles + default Admin user
 
 ---
 
-### 29 — Testing & Verification ⬜
-- [ ] Swagger — test all endpoints
-- [ ] SignalR — Chat + Notifications
-- [ ] ⏳ Gmail App Password — حطه في appsettings + تيست confirmation email
-- [ ] ⏳ Cloudinary keys — حطهم في appsettings + تيست upload
-- [ ] ⏳ Paymob keys — حطهم في appsettings + تيست payment flow
-- [ ] ⏳ ngrok — expose localhost للـ Paymob webhook
-- [ ] ⏳ Google ClientId — حطه في appsettings + تيست Google OAuth
+### 29 — Testing & Verification 🔄
+- [x] Register + Email Confirmation — tested ✅
+- [x] Login (Tourist + Admin) — tested ✅
+- [x] Avatar Upload (Cloudinary) — tested ✅
+- [ ] ⏳ Paymob payment flow — needs ngrok for webhook
+- [ ] SignalR Chat — manual test pending
+- [ ] SignalR Notifications — manual test pending
+- [ ] Google OAuth login — needs frontend
 
 ---
 
-## 🔑 appsettings.json
+## 🔑 appsettings.json structure
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=DESKTOP-09JL97C\\SQLEXPRESS;Database=TourGuideDb;Trusted_Connection=True;TrustServerCertificate=True;"
+    "DefaultConnection": ""
   },
   "JWT": {
-    "Key": "YourSuperSecretKeyHereMustBe32CharsMin!!",
+    "Key": "...",
     "Issuer": "TourGuideAPI",
     "Audience": "TourGuideClient",
     "AccessTokenExpiryMinutes": 15,
     "RefreshTokenExpiryDays": 7
   },
-  "Google": { "ClientId": "" },
-  "Cloudinary": { "CloudName": "", "ApiKey": "", "ApiSecret": "" },
-  "Paymob": { "ApiKey": "", "IntegrationId": "", "IframeId": "", "HmacSecret": "" },
-  "Email": { "Host": "smtp.gmail.com", "Port": 587, "Username": "", "Password": "", "From": "" }
+  "Google": { "ClientId": "..." },
+  "Cloudinary": { "CloudName": "dp1po0xxf", "ApiKey": "...", "ApiSecret": "..." },
+  "Paymob": { "ApiKey": "...", "IntegrationId": "5853399", "IframeId": "1069052", "HmacSecret": "..." },
+  "Email": { "Host": "smtp.gmail.com", "Port": 587, "Username": "...", "Password": "...", "From": "..." }
 }
 ```
 
@@ -542,4 +541,4 @@ TourGuide.sln
 | 🔄 | In Progress |
 | ✅ | Done |
 | ⚠️ | Has Issue |
-| ⏳ | Needs External Config / Test in Step 29 |
+| ⏳ | Pending |

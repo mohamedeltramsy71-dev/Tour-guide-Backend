@@ -25,6 +25,9 @@ public class CloudinaryService : ICloudinaryService
         {
             File = new FileDescription(file.FileName, stream),
             Folder = folder,
+            UseFilename = true,
+            UniqueFilename = true,
+            Overwrite = false,
             Transformation = new Transformation().Quality("auto").FetchFormat("auto")
         };
 
