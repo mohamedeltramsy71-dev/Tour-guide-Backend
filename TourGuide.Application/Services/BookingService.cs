@@ -10,21 +10,29 @@ namespace TourGuide.Application.Services;
 public class BookingService : IBookingService
 {
     private readonly IUnitOfWork _uow;
+    private readonly INotificationService _notificationService;
 
-    public BookingService(IUnitOfWork uow)
+    public BookingService(IUnitOfWork uow, INotificationService notificationService)
     {
         _uow = uow;
+        _notificationService = notificationService;
     }
 
     public async Task<BookingDto> CreateBookingAsync(CreateBookingRequest request, string touristId)
     {
         decimal totalPrice = 0;
+        string? guideUserId = null;
 
         if (request.PackageId.HasValue)
         {
             var package = await _uow.Repository<Package>().GetByIdAsync(request.PackageId.Value)
                 ?? throw new NotFoundException("Package not found");
             totalPrice = package.Price * request.NumberOfPersons;
+            request.GuideProfileId = package.GuideProfileId;
+
+            var guideProfile = await _uow.Repository<GuideProfile>().GetByIdAsync(package.GuideProfileId)
+                ?? throw new NotFoundException("Guide not found");
+            guideUserId = guideProfile.UserId;
         }
 
         var booking = new Booking
@@ -42,6 +50,16 @@ public class BookingService : IBookingService
 
         await _uow.Repository<Booking>().AddAsync(booking);
         await _uow.SaveChangesAsync();
+
+        if (guideUserId != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                guideUserId,
+                $"You have a new booking request!",
+                NotificationType.NewBooking,
+                booking.Id
+            );
+        }
 
         return await GetBookingByIdAsync(booking.Id, touristId);
     }
@@ -110,6 +128,13 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.Confirmed;
         _uow.Repository<Booking>().Update(booking);
         await _uow.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            booking.TouristId,
+            "Your booking has been accepted! You can now proceed with payment.",
+            NotificationType.BookingAccepted,
+            booking.Id
+        );
     }
 
     public async Task RejectBookingAsync(int id, int guideProfileId, RejectBookingRequest request)
@@ -125,6 +150,13 @@ public class BookingService : IBookingService
         booking.RejectionReason = request.Reason;
         _uow.Repository<Booking>().Update(booking);
         await _uow.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            booking.TouristId,
+            $"Your booking has been rejected. Reason: {request.Reason}",
+            NotificationType.BookingRejected,
+            booking.Id
+        );
     }
 
     public async Task CompleteBookingAsync(int id, string userId)
@@ -138,6 +170,13 @@ public class BookingService : IBookingService
         booking.Status = BookingStatus.Completed;
         _uow.Repository<Booking>().Update(booking);
         await _uow.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            booking.TouristId,
+            "Your trip has been completed. Please leave a review!",
+            NotificationType.TripReminder,
+            booking.Id
+        );
     }
 
     public async Task<IEnumerable<BookingDto>> GetAllBookingsAsync(BookingFilterParams filters)
@@ -154,6 +193,7 @@ public class BookingService : IBookingService
             .Take(filters.PageSize)
             .Select(MapToDto);
     }
+
     public async Task<int> GetGuideProfileIdAsync(string userId)
     {
         var guide = await _uow.Repository<GuideProfile>()

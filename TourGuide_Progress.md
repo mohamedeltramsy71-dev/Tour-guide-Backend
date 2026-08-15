@@ -134,12 +134,12 @@ TourGuide.sln
 │   │   ├── GuideService.cs           ✅
 │   │   ├── PackageService.cs         ✅
 │   │   ├── CustomTripService.cs      ✅
-│   │   ├── BookingService.cs         ✅
+│   │   ├── BookingService.cs         ✅ (Bug Fix: GuideProfileId + Notifications)
 │   │   ├── PaymentService.cs         ✅
 │   │   ├── ChatService.cs            ✅
 │   │   ├── ReviewService.cs          ✅
 │   │   ├── NotificationService.cs    ✅
-│   │   └── AdminService.cs           ✅
+│   │   └── AdminService.cs           ✅ (Bug Fix: TopCities + GuideName)
 │
 ├── TourGuide.Infrastructure
 │   ├── Data
@@ -227,17 +227,22 @@ TourGuide.sln
 | 16 | Guide | ✅ Done | 4 endpoints |
 | 17 | Packages | ✅ Done | 11 endpoints |
 | 18 | Custom Trip | ✅ Done | 3 endpoints |
-| 19 | Bookings | ✅ Done | 9 endpoints |
-| 20 | Payment | ✅ Done | 3 endpoints — ⏳ ngrok webhook test |
-| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub |
+| 19 | Bookings | ✅ Done | 9 endpoints — Bug Fix: GuideProfileId من Package أوتوماتيك ✅ |
+| 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook ⏳ بعد الرفع |
+| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub — SignalR ⏳ بعد الرفع |
 | 22 | Reviews | ✅ Done | 4 endpoints |
-| 23 | Notifications | ✅ Done | 4 endpoints |
-| 24 | Admin Dashboard | ✅ Done | 15 endpoints |
+| 23 | Notifications | ✅ Done | 4 endpoints — Bug Fix: Triggers في BookingService ✅ |
+| 24 | Admin Dashboard | ✅ Done | 15 endpoints — Bug Fix: TopCities + GuideName ✅ |
 | 25 | API — Global Exception Middleware | ✅ Done | |
 | 26 | API — DI Registration + Program.cs | ✅ Done | |
 | 27 | API — Swagger + JWT + CORS | ✅ Done | |
 | 28 | EF Core — Migrations + Seed Data | ✅ Done | TourGuideDb ✅ |
-| 29 | Testing & Verification | 🔄 In Progress | Paymob webhook ⏳ |
+| 29 | Testing & Verification | ✅ Done | كل الـ REST APIs متيستة ✅ |
+| 30 | Deployment | ⬜ Not Started | رفع على سيرفر |
+| 31 | Paymob Webhook E2E | ⏳ Pending | بعد الرفع بـ cloudflared |
+| 32 | SignalR Chat Test | ⏳ Pending | وقت صفحة الـ Chat في الـ Frontend |
+| 33 | SignalR Notifications Test | ⏳ Pending | وقت صفحة الـ Notifications في الـ Frontend |
+| 34 | Google OAuth Test | ⏳ Pending | وقت صفحة الـ Login في الـ Frontend |
 
 ---
 
@@ -247,8 +252,8 @@ TourGuide.sln
 |---------|--------|-------|
 | Gmail SMTP | ✅ Done | mohamedeltramsy71@gmail.com |
 | Cloudinary | ✅ Done | Cloud: dp1po0xxf |
-| Google OAuth | ✅ Done | Client ID configured |
-| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 |
+| Google OAuth | ✅ Done | Client ID configured — Test ⏳ بعد الرفع |
+| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 — Approved ✅ |
 
 ---
 
@@ -351,7 +356,8 @@ TourGuide.sln
   - `GetPaymentKeyAsync` — auth token + order + billing data
   - `ValidateHmac` — HMAC-SHA512 webhook validation
 - [x] Paymob Sandbox configured ✅ — Integration: 5853399, Iframe: 1069052
-- [ ] ⏳ Webhook test with ngrok
+- [x] Payment Approved ✅ — tested with 3DS card
+- [ ] ⏳ Webhook E2E test — بعد الرفع بـ cloudflared
 
 ---
 
@@ -363,6 +369,7 @@ TourGuide.sln
   - `MarkAsRead` — set IsRead = true
 - [x] `NotificationHub` — push via `IHubContext<NotificationHub>`
 - [x] Mapped: `/hubs/chat` + `/hubs/notifications`
+- [ ] ⏳ SignalR live test — وقت الـ Frontend
 
 ---
 
@@ -419,6 +426,8 @@ TourGuide.sln
 - [x] `IBookingService`, `BookingService`
 - [x] `BookingsController` — 9 endpoints
 - [x] Status flow: Pending → Confirmed/Rejected/Cancelled → Completed
+- [x] Bug Fix: `GuideProfileId` بيتحط أوتوماتيك من الـ Package ✅
+- [x] Bug Fix: Endpoint اسمه `/accept` مش `/confirm` ✅
 
 ---
 
@@ -428,7 +437,8 @@ TourGuide.sln
 - [x] `PaymentsController` — 3 endpoints (initiate, webhook, status)
 - [x] 10-step Paymob flow implemented
 - [x] HMAC-SHA512 webhook validation
-- [ ] ⏳ End-to-end test with ngrok
+- [x] Payment Approved ✅ — tested with 3DS card
+- [ ] ⏳ Webhook E2E test — بعد الرفع بـ cloudflared
 
 ---
 
@@ -437,6 +447,7 @@ TourGuide.sln
 - [x] `IChatRepository`, `ChatRepository`, `IChatService`, `ChatService`
 - [x] `ChatController` — 3 endpoints (conversations, messages, unread-count)
 - [x] SignalR: per-booking groups, real-time push, presence
+- [ ] ⏳ SignalR live test — وقت صفحة الـ Chat في الـ Frontend
 
 ---
 
@@ -455,6 +466,8 @@ TourGuide.sln
 - [x] `NotificationsController` — 4 endpoints (list, mark-read, mark-all-read, count)
 - [x] Real-time push via IHubContext<NotificationHub>
 - [x] Triggers: NewBooking, BookingAccepted, BookingRejected, PaymentConfirmed, NewMessage, GuideApproved, TripReminder
+- [x] Bug Fix: أضفنا `CreateNotificationAsync` في `BookingService` على كل action ✅
+- [x] Tested ✅ — BookingAccepted notification وصلت للـ Tourist
 
 ---
 
@@ -467,6 +480,8 @@ TourGuide.sln
   - GET/PUT /api/admin/guides/pending, approve, reject, suspend
   - GET/PUT /api/admin/users, users/{id}/ban
   - GET/DELETE /api/admin/reviews, reviews/{id}
+- [x] Bug Fix: `GetTopCitiesAsync` — NullReference على `p.City` → Join منفصل مع City repository ✅
+- [x] Bug Fix: `GuideName = "Unknown"` → Join مع `_userManager.Users` ✅
 
 ---
 
@@ -500,14 +515,32 @@ TourGuide.sln
 
 ---
 
-### 29 — Testing & Verification 🔄
+### 29 — Testing & Verification ✅
 - [x] Register + Email Confirmation — tested ✅
-- [x] Login (Tourist + Admin) — tested ✅
+- [x] Login (Tourist + Guide + Admin) — tested ✅
 - [x] Avatar Upload (Cloudinary) — tested ✅
-- [ ] ⏳ Paymob payment flow — needs ngrok for webhook
-- [ ] SignalR Chat — manual test pending
-- [ ] SignalR Notifications — manual test pending
-- [ ] Google OAuth login — needs frontend
+- [x] Cities & Landmarks CRUD — tested ✅
+- [x] Guide Profile Update + Approve — tested ✅
+- [x] Packages CRUD — tested ✅
+- [x] Create Booking (Tourist) — tested ✅
+- [x] Accept + Complete Booking (Guide) — tested ✅
+- [x] Initiate Payment (Paymob) — Approved ✅
+- [x] Create Review — tested ✅
+- [x] Notifications — tested ✅
+- [x] Admin Dashboard + Reports — tested ✅
+- [ ] ⏳ Paymob Webhook — بعد الرفع بـ cloudflared
+- [ ] ⏳ SignalR Chat — وقت الـ Frontend
+- [ ] ⏳ SignalR Notifications — وقت الـ Frontend
+- [ ] ⏳ Google OAuth — وقت الـ Frontend
+
+---
+
+### 30 — Deployment ⬜
+- [ ] رفع الـ API على سيرفر
+- [ ] ضبط Connection String على Production DB
+- [ ] ضبط CORS يقبل الـ Frontend URL
+- [ ] ضبط appsettings.Production.json
+- [ ] تيست الـ Webhook بـ cloudflared بعد الرفع
 
 ---
 
@@ -541,4 +574,4 @@ TourGuide.sln
 | 🔄 | In Progress |
 | ✅ | Done |
 | ⚠️ | Has Issue |
-| ⏳ | Pending |
+| ⏳ | Pending — بعد الرفع / الـ Frontend |

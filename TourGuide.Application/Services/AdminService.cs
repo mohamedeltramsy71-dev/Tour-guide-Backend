@@ -68,7 +68,7 @@ public class AdminService : IAdminService
                     Count = g.Count()
                 }).ToList();
         }
-        else // daily
+        else
         {
             items = bookingList
                 .GroupBy(b => b.CreatedAt.Date)
@@ -103,7 +103,7 @@ public class AdminService : IAdminService
                     Amount = g.Sum(b => b.TotalPrice)
                 }).ToList();
         }
-        else // weekly
+        else
         {
             items = paidBookings
                 .GroupBy(b => System.Globalization.CultureInfo.CurrentCulture
@@ -129,14 +129,19 @@ public class AdminService : IAdminService
     {
         var bookings = await _uow.Repository<Booking>().GetAllAsync();
         var packages = await _uow.Repository<Package>().GetAllAsync();
+        var cities = await _uow.Repository<City>().GetAllAsync();
 
         var result = bookings
             .Where(b => b.PackageId.HasValue)
             .Join(packages,
                 b => b.PackageId,
                 p => p.Id,
-                (b, p) => new { p.CityId, p.City })
-            .GroupBy(x => new { x.CityId, x.City.NameEn })
+                (b, p) => new { p.CityId })
+            .Join(cities,
+                x => x.CityId,
+                c => c.Id,
+                (x, c) => new { x.CityId, c.NameEn })
+            .GroupBy(x => new { x.CityId, x.NameEn })
             .OrderByDescending(g => g.Count())
             .Take(topN)
             .Select(g => new TopCityDto
@@ -177,11 +182,12 @@ public class AdminService : IAdminService
         var guides = await _uow.Repository<GuideProfile>().GetAllAsync();
         var bookings = await _uow.Repository<Booking>().GetAllAsync();
         var bookingList = bookings.ToList();
+        var users = _userManager.Users.ToList();
 
         var result = guides.Select(g => new GuidePerformanceDto
         {
             GuideProfileId = g.Id,
-            GuideName = g.User?.FullName ?? "Unknown",
+            GuideName = users.FirstOrDefault(u => u.Id == g.UserId)?.FullName ?? "Unknown",
             AverageRating = g.AverageRating,
             TotalBookings = bookingList.Count(b => b.GuideProfileId == g.Id),
             TotalRevenue = bookingList
@@ -211,7 +217,7 @@ public class AdminService : IAdminService
                     NewUsers = g.Count()
                 }).ToList();
         }
-        else // daily
+        else
         {
             items = users
                 .GroupBy(u => u.CreatedAt.Date)
