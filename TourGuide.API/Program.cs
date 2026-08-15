@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TourGuide.API.Extensions;
@@ -41,6 +40,22 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+
+    // SignalR JWT من query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/hubs/chat") || path.StartsWithSegments("/hubs/notifications")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
@@ -49,10 +64,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
-        policy.WithOrigins("http://localhost:4200") // Angular default
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials()); // مهم للـ SignalR
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "https://tour-guide.runasp.net",
+            "http://tour-guide.runasp.net"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
 
 // SignalR
@@ -105,21 +124,16 @@ using (var scope = app.Services.CreateScope())
 // ================================
 // Middleware Pipeline
 // ================================
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
-app.UseMiddleware<RequestLoggingMiddleware>(); 
-app.UseMiddleware<GlobalExceptionHandler>();   
-app.UseHttpsRedirection();
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<GlobalExceptionHandler>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<TourGuide.Infrastructure.Hubs.ChatHub>("/hubs/chat");
 app.MapHub<TourGuide.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
-
 
 app.Run();
