@@ -3,6 +3,12 @@
 
 ---
 
+## 🌐 Server URL
+> **https://tourguidee.runasp.net**
+> Swagger UI: https://tourguidee.runasp.net/swagger/index.html
+
+---
+
 ## 🗂️ Project Structure
 
 ```
@@ -187,7 +193,7 @@ TourGuide.sln
     │   ├── ChatController.cs              ✅ (3 endpoints)
     │   ├── ReviewsController.cs           ✅ (4 endpoints)
     │   ├── NotificationsController.cs     ✅ (4 endpoints)
-    │   └── AdminController.cs             ✅ (15 endpoints)
+    │   └── AdminController.cs             ✅ (17 endpoints) ← Bug Fix: أضفنا GET+DELETE users/{id}
     ├── Extensions
     │   └── ServiceCollectionExtensions.cs ✅
     ├── Middlewares
@@ -228,21 +234,24 @@ TourGuide.sln
 | 17 | Packages | ✅ Done | 11 endpoints |
 | 18 | Custom Trip | ✅ Done | 3 endpoints |
 | 19 | Bookings | ✅ Done | 9 endpoints — Bug Fix: GuideProfileId من Package أوتوماتيك ✅ |
-| 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook ⏳ بعد الرفع |
-| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub — SignalR ⏳ بعد الرفع |
+| 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook ⏳ E2E Test |
+| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub — SignalR ⏳ وقت الـ Frontend |
 | 22 | Reviews | ✅ Done | 4 endpoints |
 | 23 | Notifications | ✅ Done | 4 endpoints — Bug Fix: Triggers في BookingService ✅ |
-| 24 | Admin Dashboard | ✅ Done | 15 endpoints — Bug Fix: TopCities + GuideName ✅ |
+| 24 | Admin Dashboard | ✅ Done | 17 endpoints — Bug Fix: TopCities + GuideName + GET/DELETE users/{id} ✅ |
 | 25 | API — Global Exception Middleware | ✅ Done | |
 | 26 | API — DI Registration + Program.cs | ✅ Done | |
 | 27 | API — Swagger + JWT + CORS | ✅ Done | |
 | 28 | EF Core — Migrations + Seed Data | ✅ Done | TourGuideDb ✅ |
 | 29 | Testing & Verification | ✅ Done | كل الـ REST APIs متيستة ✅ |
-| 30 | Deployment | ⬜ Not Started | رفع على سيرفر |
-| 31 | Paymob Webhook E2E | ⏳ Pending | بعد الرفع بـ cloudflared |
-| 32 | SignalR Chat Test | ⏳ Pending | وقت صفحة الـ Chat في الـ Frontend |
-| 33 | SignalR Notifications Test | ⏳ Pending | وقت صفحة الـ Notifications في الـ Frontend |
-| 34 | Google OAuth Test | ⏳ Pending | وقت صفحة الـ Login في الـ Frontend |
+| 30 | Deployment | ✅ Done | https://tourguidee.runasp.net ✅ |
+| 31 | Paymob Webhook Config | ✅ Done | URL حُط في Paymob Dashboard ✅ — E2E Test ⏳ |
+| 32 | Google OAuth Config | ✅ Done | Origins + Redirect URIs على Google Console ✅ |
+| 33 | SignalR Chat Test | ⏳ Pending | وقت صفحة الـ Chat في الـ Frontend |
+| 34 | SignalR Notifications Test | ⏳ Pending | وقت صفحة الـ Notifications في الـ Frontend |
+| 35 | Google OAuth E2E Test | ⏳ Pending | وقت صفحة الـ Login في الـ Frontend |
+| 36 | Paymob Webhook E2E Test | ⏳ Pending | أول ما يكون في يوزرات حقيقيين |
+| 37 | CORS — Production Frontend URL | ⏳ Pending | لما الـ Frontend يتحط على Vercel |
 
 ---
 
@@ -252,8 +261,8 @@ TourGuide.sln
 |---------|--------|-------|
 | Gmail SMTP | ✅ Done | mohamedeltramsy71@gmail.com |
 | Cloudinary | ✅ Done | Cloud: dp1po0xxf |
-| Google OAuth | ✅ Done | Client ID configured — Test ⏳ بعد الرفع |
-| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 — Approved ✅ |
+| Google OAuth | ✅ Done | Origins + Redirect URIs configured ✅ — E2E Test ⏳ |
+| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 — Webhook URL set ✅ |
 
 ---
 
@@ -357,7 +366,8 @@ TourGuide.sln
   - `ValidateHmac` — HMAC-SHA512 webhook validation
 - [x] Paymob Sandbox configured ✅ — Integration: 5853399, Iframe: 1069052
 - [x] Payment Approved ✅ — tested with 3DS card
-- [ ] ⏳ Webhook E2E test — بعد الرفع بـ cloudflared
+- [x] Webhook URL set in Paymob Dashboard ✅ → https://tourguidee.runasp.net/api/payments/webhook
+- [ ] ⏳ Webhook E2E test — أول ما يكون في يوزرات حقيقيين
 
 ---
 
@@ -438,7 +448,8 @@ TourGuide.sln
 - [x] 10-step Paymob flow implemented
 - [x] HMAC-SHA512 webhook validation
 - [x] Payment Approved ✅ — tested with 3DS card
-- [ ] ⏳ Webhook E2E test — بعد الرفع بـ cloudflared
+- [x] Webhook URL set in Paymob Dashboard ✅
+- [ ] ⏳ Webhook E2E test — أول ما يكون في يوزرات
 
 ---
 
@@ -474,14 +485,15 @@ TourGuide.sln
 ### 24 — Admin Dashboard ✅
 - [x] DTOs: DashboardSummaryDto, BookingsReportDto, RevenueReportDto, TopCityDto, TopLandmarkDto, GuidePerformanceDto, UserGrowthDto
 - [x] `IAdminService`, `AdminService`
-- [x] `AdminController` — 15 endpoints:
+- [x] `AdminController` — 17 endpoints:
   - GET /api/admin/dashboard
   - GET /api/admin/reports/bookings, revenue, top-cities, top-landmarks, guides, users
   - GET/PUT /api/admin/guides/pending, approve, reject, suspend
-  - GET/PUT /api/admin/users, users/{id}/ban
+  - GET/PUT/DELETE /api/admin/users, users/{id}, users/{id}/ban ← Bug Fix ✅
   - GET/DELETE /api/admin/reviews, reviews/{id}
 - [x] Bug Fix: `GetTopCitiesAsync` — NullReference على `p.City` → Join منفصل مع City repository ✅
 - [x] Bug Fix: `GuideName = "Unknown"` → Join مع `_userManager.Users` ✅
+- [x] Bug Fix: أضفنا `GET /api/admin/users/{id}` و `DELETE /api/admin/users/{id}` ✅
 
 ---
 
@@ -510,7 +522,7 @@ TourGuide.sln
 
 ### 28 — EF Core Migrations ✅
 - [x] `InitialCreate` migration
-- [x] `Update-Database` — TourGuideDb created on DESKTOP-09JL97C\SQLEXPRESS
+- [x] `Update-Database` — TourGuideDb created
 - [x] Seed: Tourist, Guide, Admin roles + default Admin user
 
 ---
@@ -528,19 +540,39 @@ TourGuide.sln
 - [x] Create Review — tested ✅
 - [x] Notifications — tested ✅
 - [x] Admin Dashboard + Reports — tested ✅
-- [ ] ⏳ Paymob Webhook — بعد الرفع بـ cloudflared
+- [ ] ⏳ Paymob Webhook E2E — أول ما يكون في يوزرات
 - [ ] ⏳ SignalR Chat — وقت الـ Frontend
 - [ ] ⏳ SignalR Notifications — وقت الـ Frontend
-- [ ] ⏳ Google OAuth — وقت الـ Frontend
+- [ ] ⏳ Google OAuth E2E — وقت الـ Frontend
 
 ---
 
-### 30 — Deployment ⬜
-- [ ] رفع الـ API على سيرفر
-- [ ] ضبط Connection String على Production DB
-- [ ] ضبط CORS يقبل الـ Frontend URL
-- [ ] ضبط appsettings.Production.json
-- [ ] تيست الـ Webhook بـ cloudflared بعد الرفع
+### 30 — Deployment ✅
+- [x] رفع الـ API على runasp.net ✅
+- [x] Connection String على Production DB ✅
+- [x] CORS يقبل http://localhost:4200 ✅
+- [x] appsettings على السيرفر ✅
+- [x] Swagger شغال على Production ✅
+- [ ] ⏳ CORS يقبل Frontend Vercel URL — لما الـ Frontend يتحط على Vercel
+
+---
+
+### 31 — Paymob Webhook Config ✅
+- [x] Webhook URL حُط في Paymob Dashboard ✅
+  - URL: https://tourguidee.runasp.net/api/payments/webhook
+  - Integration ID: 5853399
+- [ ] ⏳ E2E Test — أول ما يكون في يوزرات حقيقيين
+
+---
+
+### 32 — Google OAuth Config ✅
+- [x] Authorized JavaScript Origins:
+  - http://localhost:4200
+  - https://tourguidee.runasp.net
+- [x] Authorized Redirect URIs:
+  - http://localhost:4200
+  - https://tourguidee.runasp.net/signin-google
+- [ ] ⏳ E2E Test — وقت صفحة الـ Login في الـ Frontend
 
 ---
 

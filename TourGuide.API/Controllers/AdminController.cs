@@ -143,4 +143,17 @@ public class AdminController : ControllerBase
         await _reviewService.DeleteReviewAsync(string.Empty, id, isAdmin: true);
         return NoContent();
     }
+    [HttpGet("users/{id}")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var result = await _userService.GetUserByIdAsync(id);
+        return Ok(result);
+    }
+
+    [HttpDelete("users/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        await _userService.SoftDeleteUserAsync(id);
+        return NoContent();
+    }
 }

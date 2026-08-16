@@ -66,6 +66,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
         policy.WithOrigins(
             "http://localhost:4200",
+            "https://tourguidee.runasp.net",
+            "http://tourguidee.runasp.net",
             "https://tour-guide.runasp.net",
             "http://tour-guide.runasp.net"
         )
@@ -135,5 +137,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<TourGuide.Infrastructure.Hubs.ChatHub>("/hubs/chat");
 app.MapHub<TourGuide.Infrastructure.Hubs.NotificationHub>("/hubs/notifications");
+
+// Root redirect to Swagger
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();
