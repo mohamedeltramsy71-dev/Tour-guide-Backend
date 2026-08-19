@@ -86,6 +86,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 }

@@ -9,13 +9,14 @@ namespace TourGuide.API.Controllers;
 public class CitiesController : ControllerBase
 {
     private readonly ICityService _cityService;
+    private readonly ICloudinaryService _cloudinaryService;
 
-    public CitiesController(ICityService cityService)
+    public CitiesController(ICityService cityService, ICloudinaryService cloudinaryService)
     {
         _cityService = cityService;
+        _cloudinaryService = cloudinaryService;
     }
 
-    // ───── Get All Cities ─────
     [HttpGet("api/cities")]
     public async Task<IActionResult> GetAllCities(
         [FromQuery] int page = 1,
@@ -25,7 +26,6 @@ public class CitiesController : ControllerBase
         return Ok(result);
     }
 
-    // ───── Get City By ID ─────
     [HttpGet("api/cities/{id}")]
     public async Task<IActionResult> GetCityById(int id)
     {
@@ -33,7 +33,6 @@ public class CitiesController : ControllerBase
         return Ok(result);
     }
 
-    // ───── Trending Cities ─────
     [HttpGet("api/cities/trending")]
     public async Task<IActionResult> GetTrendingCities([FromQuery] int topN = 5)
     {
@@ -41,7 +40,6 @@ public class CitiesController : ControllerBase
         return Ok(result);
     }
 
-    // ───── Create City (Admin) ─────
     [HttpPost("api/cities")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateCity([FromBody] CreateCityRequest request)
@@ -50,7 +48,6 @@ public class CitiesController : ControllerBase
         return CreatedAtAction(nameof(GetCityById), new { id = result.Id }, result);
     }
 
-    // ───── Update City (Admin) ─────
     [HttpPut("api/cities/{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateCity(int id, [FromBody] UpdateCityRequest request)
@@ -59,12 +56,23 @@ public class CitiesController : ControllerBase
         return Ok(result);
     }
 
-    // ───── Delete City (Admin) ─────
     [HttpDelete("api/cities/{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteCity(int id)
     {
         await _cityService.DeleteCityAsync(id);
         return Ok(new { message = "City deleted successfully" });
+    }
+
+    // ── Upload City Image ──────────────────────────────────
+    [HttpPost("api/cities/upload-image")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UploadCityImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { message = "No file uploaded" });
+
+        var imageUrl = await _cloudinaryService.UploadImageAsync(file, "cities");
+        return Ok(new { imageUrl });
     }
 }

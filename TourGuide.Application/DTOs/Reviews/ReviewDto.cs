@@ -6,6 +6,7 @@ public class ReviewDto
     public int BookingId { get; set; }
     public string TouristName { get; set; } = string.Empty;
     public string? TouristAvatar { get; set; }
+    public string GuideName { get; set; } = string.Empty;
     public int Rating { get; set; }
     public string? Comment { get; set; }
     public DateTime CreatedAt { get; set; }

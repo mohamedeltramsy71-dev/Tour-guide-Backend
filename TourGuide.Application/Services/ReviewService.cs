@@ -54,13 +54,27 @@ public class ReviewService : IReviewService
     public async Task<IEnumerable<ReviewDto>> GetGuideReviewsAsync(int guideProfileId, int page, int pageSize)
     {
         var reviews = await _uow.Repository<Review>()
-            .FindAsync(r => r.GuideProfileId == guideProfileId);
+            .FindWithIncludeAsync(r => r.GuideProfileId == guideProfileId, r => r.Tourist);
+
+        var guideProfile = await _uow.Repository<GuideProfile>()
+            .FindWithIncludeAsync(g => g.Id == guideProfileId, g => g.User);
+        var guide = guideProfile.FirstOrDefault();
 
         return reviews
             .OrderByDescending(r => r.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(MapToDto);
+            .Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                BookingId = r.BookingId,
+                TouristName = r.Tourist?.FullName ?? string.Empty,
+                TouristAvatar = r.Tourist?.AvatarUrl,
+                GuideName = guide?.User?.FullName ?? string.Empty,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            });
     }
 
     public async Task<ReviewDto> UpdateReviewAsync(string touristId, int reviewId, UpdateReviewRequest request)
@@ -99,13 +113,30 @@ public class ReviewService : IReviewService
 
     public async Task<IEnumerable<ReviewDto>> GetAllReviewsAsync(int page, int pageSize)
     {
-        var reviews = await _uow.Repository<Review>().GetAllAsync();
+        var reviews = await _uow.Repository<Review>()
+            .GetAllWithIncludeAsync(r => r.Tourist, r => r.GuideProfile);
+
+        // نجيب الـ GuideProfile Users يدوياً
+        var guideProfileIds = reviews.Select(r => r.GuideProfileId).Distinct().ToList();
+        var guideProfiles = await _uow.Repository<GuideProfile>()
+            .FindWithIncludeAsync(g => guideProfileIds.Contains(g.Id), g => g.User);
+        var guideDict = guideProfiles.ToDictionary(g => g.Id);
 
         return reviews
             .OrderByDescending(r => r.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(MapToDto);
+            .Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                BookingId = r.BookingId,
+                TouristName = r.Tourist?.FullName ?? string.Empty,
+                TouristAvatar = r.Tourist?.AvatarUrl,
+                GuideName = guideDict.TryGetValue(r.GuideProfileId, out var gp) ? gp.User?.FullName ?? string.Empty : string.Empty,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            });
     }
 
     private async Task RecalculateGuideRatingAsync(int guideProfileId)

@@ -11,16 +11,19 @@ namespace TourGuide.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IConfiguration configuration)
     {
         _authService = authService;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}/api/auth/confirm-email";
+        var frontendUrl = _configuration["Frontend:BaseUrl"];
+        var baseUrl = $"{frontendUrl}/auth/confirm-email";
         var result = await _authService.RegisterAsync(request, baseUrl);
         return Ok(new { message = "Registration successful. Please check your email to confirm your account.", data = result });
     }
@@ -49,7 +52,8 @@ public class AuthController : ControllerBase
     [HttpPost("forget-password")]
     public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}/api/auth/reset-password";
+        var frontendUrl = _configuration["Frontend:BaseUrl"];
+        var baseUrl = $"{frontendUrl}/auth/reset-password";
         await _authService.ForgetPasswordAsync(request, baseUrl);
         return Ok(new { message = "If this email exists, a reset link has been sent." });
     }

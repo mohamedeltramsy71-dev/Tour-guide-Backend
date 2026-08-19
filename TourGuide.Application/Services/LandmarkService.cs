@@ -23,6 +23,8 @@ public class LandmarkService : ILandmarkService
     public async Task<IEnumerable<LandmarkDto>> GetAllLandmarksAsync(LandmarkFilterParams filter)
     {
         var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
+        var images = await _unitOfWork.Repository<LandmarkImage>().GetAllAsync();
+        var cities = await _unitOfWork.Repository<City>().GetAllAsync();
 
         var query = landmarks.Where(l => !l.IsDeleted);
 
@@ -44,7 +46,6 @@ public class LandmarkService : ILandmarkService
                 l.NameAr.Contains(filter.Search) ||
                 l.NameEn.Contains(filter.Search));
 
-        // Sort
         query = filter.SortBy?.ToLower() switch
         {
             "price" => filter.SortDir == "asc"
@@ -58,7 +59,20 @@ public class LandmarkService : ILandmarkService
         return query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
-            .Select(l => MapToDto(l));
+            .Select(l => new LandmarkDto
+            {
+                Id = l.Id,
+                NameAr = l.NameAr,
+                NameEn = l.NameEn,
+                Description = l.Description,
+                Location = l.Location,
+                EntryFee = l.EntryFee,
+                AverageRating = l.AverageRating,
+                Category = l.Category.ToString(),
+                CityId = l.CityId,
+                CityName = cities.FirstOrDefault(c => c.Id == l.CityId)?.NameEn ?? "",
+                Images = images.Where(i => i.LandmarkId == l.Id).Select(i => i.ImageUrl).ToList()
+            });
     }
 
     // ───── Get Landmark By ID ─────
@@ -70,7 +84,23 @@ public class LandmarkService : ILandmarkService
         if (landmark.IsDeleted)
             throw new NotFoundException("Landmark not found");
 
-        return MapToDto(landmark);
+        var images = await _unitOfWork.Repository<LandmarkImage>().GetAllAsync();
+        var cities = await _unitOfWork.Repository<City>().GetAllAsync();
+
+        return new LandmarkDto
+        {
+            Id = landmark.Id,
+            NameAr = landmark.NameAr,
+            NameEn = landmark.NameEn,
+            Description = landmark.Description,
+            Location = landmark.Location,
+            EntryFee = landmark.EntryFee,
+            AverageRating = landmark.AverageRating,
+            Category = landmark.Category.ToString(),
+            CityId = landmark.CityId,
+            CityName = cities.FirstOrDefault(c => c.Id == landmark.CityId)?.NameEn ?? "",
+            Images = images.Where(i => i.LandmarkId == landmark.Id).Select(i => i.ImageUrl).ToList()
+        };
     }
 
     // ───── Create Landmark ─────
@@ -93,7 +123,20 @@ public class LandmarkService : ILandmarkService
         await _unitOfWork.Repository<Landmark>().AddAsync(landmark);
         await _unitOfWork.SaveChangesAsync();
 
-        return MapToDto(landmark);
+        return new LandmarkDto
+        {
+            Id = landmark.Id,
+            NameAr = landmark.NameAr,
+            NameEn = landmark.NameEn,
+            Description = landmark.Description,
+            Location = landmark.Location,
+            EntryFee = landmark.EntryFee,
+            AverageRating = landmark.AverageRating,
+            Category = landmark.Category.ToString(),
+            CityId = landmark.CityId,
+            CityName = "",
+            Images = new()
+        };
     }
 
     // ───── Update Landmark ─────
@@ -116,7 +159,23 @@ public class LandmarkService : ILandmarkService
         _unitOfWork.Repository<Landmark>().Update(landmark);
         await _unitOfWork.SaveChangesAsync();
 
-        return MapToDto(landmark);
+        var images = await _unitOfWork.Repository<LandmarkImage>().GetAllAsync();
+        var cities = await _unitOfWork.Repository<City>().GetAllAsync();
+
+        return new LandmarkDto
+        {
+            Id = landmark.Id,
+            NameAr = landmark.NameAr,
+            NameEn = landmark.NameEn,
+            Description = landmark.Description,
+            Location = landmark.Location,
+            EntryFee = landmark.EntryFee,
+            AverageRating = landmark.AverageRating,
+            Category = landmark.Category.ToString(),
+            CityId = landmark.CityId,
+            CityName = cities.FirstOrDefault(c => c.Id == landmark.CityId)?.NameEn ?? "",
+            Images = images.Where(i => i.LandmarkId == landmark.Id).Select(i => i.ImageUrl).ToList()
+        };
     }
 
     // ───── Delete Landmark ─────
@@ -164,20 +223,4 @@ public class LandmarkService : ILandmarkService
         _unitOfWork.Repository<LandmarkImage>().Delete(image);
         await _unitOfWork.SaveChangesAsync();
     }
-
-    // ───── Helper ─────
-    private static LandmarkDto MapToDto(Landmark l) => new()
-    {
-        Id = l.Id,
-        NameAr = l.NameAr,
-        NameEn = l.NameEn,
-        Description = l.Description,
-        Location = l.Location,
-        EntryFee = l.EntryFee,
-        AverageRating = l.AverageRating,
-        Category = l.Category.ToString(),
-        CityId = l.CityId,
-        CityName = l.City?.NameEn ?? "",
-        Images = l.Images?.Select(i => i.ImageUrl).ToList() ?? new()
-    };
 }

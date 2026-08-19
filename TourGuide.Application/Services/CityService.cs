@@ -19,12 +19,21 @@ public class CityService : ICityService
     public async Task<IEnumerable<CityDto>> GetAllCitiesAsync(int page, int pageSize)
     {
         var cities = await _unitOfWork.Repository<City>().GetAllAsync();
+        var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
 
         return cities
             .Where(c => !c.IsDeleted)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(c => MapToDto(c));
+            .Select(c => new CityDto
+            {
+                Id = c.Id,
+                NameAr = c.NameAr,
+                NameEn = c.NameEn,
+                Description = c.Description,
+                ImageUrl = c.ImageUrl,
+                LandmarksCount = landmarks.Count(l => l.CityId == c.Id && !l.IsDeleted)
+            });
     }
 
     // ───── Get City By ID ─────
@@ -36,18 +45,37 @@ public class CityService : ICityService
         if (city.IsDeleted)
             throw new NotFoundException("City not found");
 
-        return MapToDto(city);
+        var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
+
+        return new CityDto
+        {
+            Id = city.Id,
+            NameAr = city.NameAr,
+            NameEn = city.NameEn,
+            Description = city.Description,
+            ImageUrl = city.ImageUrl,
+            LandmarksCount = landmarks.Count(l => l.CityId == city.Id && !l.IsDeleted)
+        };
     }
 
     // ───── Trending Cities ─────
     public async Task<IEnumerable<CityDto>> GetTrendingCitiesAsync(int topN)
     {
         var cities = await _unitOfWork.Repository<City>().GetAllAsync();
+        var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
 
         return cities
             .Where(c => !c.IsDeleted)
             .Take(topN)
-            .Select(c => MapToDto(c));
+            .Select(c => new CityDto
+            {
+                Id = c.Id,
+                NameAr = c.NameAr,
+                NameEn = c.NameEn,
+                Description = c.Description,
+                ImageUrl = c.ImageUrl,
+                LandmarksCount = landmarks.Count(l => l.CityId == c.Id && !l.IsDeleted)
+            });
     }
 
     // ───── Create City ─────
@@ -64,7 +92,15 @@ public class CityService : ICityService
         await _unitOfWork.Repository<City>().AddAsync(city);
         await _unitOfWork.SaveChangesAsync();
 
-        return MapToDto(city);
+        return new CityDto
+        {
+            Id = city.Id,
+            NameAr = city.NameAr,
+            NameEn = city.NameEn,
+            Description = city.Description,
+            ImageUrl = city.ImageUrl,
+            LandmarksCount = 0
+        };
     }
 
     // ───── Update City ─────
@@ -81,7 +117,17 @@ public class CityService : ICityService
         _unitOfWork.Repository<City>().Update(city);
         await _unitOfWork.SaveChangesAsync();
 
-        return MapToDto(city);
+        var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
+
+        return new CityDto
+        {
+            Id = city.Id,
+            NameAr = city.NameAr,
+            NameEn = city.NameEn,
+            Description = city.Description,
+            ImageUrl = city.ImageUrl,
+            LandmarksCount = landmarks.Count(l => l.CityId == city.Id && !l.IsDeleted)
+        };
     }
 
     // ───── Delete City ─────
@@ -94,15 +140,4 @@ public class CityService : ICityService
         _unitOfWork.Repository<City>().Update(city);
         await _unitOfWork.SaveChangesAsync();
     }
-
-    // ───── Helper ─────
-    private static CityDto MapToDto(City city) => new()
-    {
-        Id = city.Id,
-        NameAr = city.NameAr,
-        NameEn = city.NameEn,
-        Description = city.Description,
-        ImageUrl = city.ImageUrl,
-        LandmarksCount = city.Landmarks?.Count(l => !l.IsDeleted) ?? 0
-    };
 }

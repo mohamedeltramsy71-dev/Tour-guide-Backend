@@ -1,4 +1,5 @@
-﻿using TourGuide.Application.DTOs.Booking;
+﻿using Microsoft.EntityFrameworkCore;
+using TourGuide.Application.DTOs.Booking;
 using TourGuide.Application.Interfaces;
 using TourGuide.Domain.Entities;
 using TourGuide.Domain.Enums;
@@ -66,13 +67,17 @@ public class BookingService : IBookingService
 
     public async Task<IEnumerable<BookingDto>> GetMyBookingsAsync(string touristId, BookingFilterParams filters)
     {
-        var bookings = await _uow.Repository<Booking>()
-            .FindAsync(b => b.TouristId == touristId &&
-                (!filters.Status.HasValue || b.Status == filters.Status) &&
+        var bookings = await _uow.Repository<Booking>().FindWithNestedIncludeAsync(
+            b => b.TouristId == touristId &&
                 (!filters.FromDate.HasValue || b.StartDate >= filters.FromDate) &&
-                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate));
+                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
+            q => q.Include(b => b.Tourist)
+                  .Include(b => b.GuideProfile).ThenInclude(g => g.User)
+                  .Include(b => b.Package)
+        );
 
         return bookings
+            .Where(b => string.IsNullOrEmpty(filters.Status) || b.Status.ToString() == filters.Status)
             .OrderByDescending(b => b.CreatedAt)
             .Skip((filters.Page - 1) * filters.PageSize)
             .Take(filters.PageSize)
@@ -81,7 +86,14 @@ public class BookingService : IBookingService
 
     public async Task<BookingDto> GetBookingByIdAsync(int id, string userId)
     {
-        var booking = await _uow.Repository<Booking>().FindOneAsync(b => b.Id == id)
+        var bookings = await _uow.Repository<Booking>().FindWithNestedIncludeAsync(
+            b => b.Id == id,
+            q => q.Include(b => b.Tourist)
+                  .Include(b => b.GuideProfile).ThenInclude(g => g.User)
+                  .Include(b => b.Package)
+        );
+
+        var booking = bookings.FirstOrDefault()
             ?? throw new NotFoundException("Booking not found");
 
         return MapToDto(booking);
@@ -103,13 +115,17 @@ public class BookingService : IBookingService
 
     public async Task<IEnumerable<BookingDto>> GetGuideBookingsAsync(int guideProfileId, BookingFilterParams filters)
     {
-        var bookings = await _uow.Repository<Booking>()
-            .FindAsync(b => b.GuideProfileId == guideProfileId &&
-                (!filters.Status.HasValue || b.Status == filters.Status) &&
+        var bookings = await _uow.Repository<Booking>().FindWithNestedIncludeAsync(
+            b => b.GuideProfileId == guideProfileId &&
                 (!filters.FromDate.HasValue || b.StartDate >= filters.FromDate) &&
-                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate));
+                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
+            q => q.Include(b => b.Tourist)
+                  .Include(b => b.GuideProfile).ThenInclude(g => g.User)
+                  .Include(b => b.Package)
+        );
 
         return bookings
+            .Where(b => string.IsNullOrEmpty(filters.Status) || b.Status.ToString() == filters.Status)
             .OrderByDescending(b => b.CreatedAt)
             .Skip((filters.Page - 1) * filters.PageSize)
             .Take(filters.PageSize)
@@ -181,13 +197,17 @@ public class BookingService : IBookingService
 
     public async Task<IEnumerable<BookingDto>> GetAllBookingsAsync(BookingFilterParams filters)
     {
-        var bookings = await _uow.Repository<Booking>()
-            .FindAsync(b =>
-                (!filters.Status.HasValue || b.Status == filters.Status) &&
+        var bookings = await _uow.Repository<Booking>().FindWithNestedIncludeAsync(
+            b =>
                 (!filters.FromDate.HasValue || b.StartDate >= filters.FromDate) &&
-                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate));
+                (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
+            q => q.Include(b => b.Tourist)
+                  .Include(b => b.GuideProfile).ThenInclude(g => g.User)
+                  .Include(b => b.Package)
+        );
 
         return bookings
+            .Where(b => string.IsNullOrEmpty(filters.Status) || b.Status.ToString() == filters.Status)
             .OrderByDescending(b => b.CreatedAt)
             .Skip((filters.Page - 1) * filters.PageSize)
             .Take(filters.PageSize)
