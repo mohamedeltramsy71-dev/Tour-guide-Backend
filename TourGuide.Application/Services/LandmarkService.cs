@@ -1,7 +1,9 @@
-﻿using TourGuide.Application.DTOs.Landmark;
+﻿// TourGuide.Application/Services/LandmarkService.cs
+// التعديلات: شيلنا كل Enum.TryParse وخلينا Category string مباشرة
+
+using TourGuide.Application.DTOs.Landmark;
 using TourGuide.Application.Interfaces;
 using TourGuide.Domain.Entities;
-using TourGuide.Domain.Enums;
 using TourGuide.Domain.Exceptions;
 using TourGuide.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +21,6 @@ public class LandmarkService : ILandmarkService
         _cloudinaryService = cloudinaryService;
     }
 
-    // ───── Get All Landmarks ─────
     public async Task<IEnumerable<LandmarkDto>> GetAllLandmarksAsync(LandmarkFilterParams filter)
     {
         var landmarks = await _unitOfWork.Repository<Landmark>().GetAllAsync();
@@ -31,9 +32,8 @@ public class LandmarkService : ILandmarkService
         if (filter.CityId.HasValue)
             query = query.Where(l => l.CityId == filter.CityId.Value);
 
-        if (!string.IsNullOrEmpty(filter.Category) &&
-            Enum.TryParse<LandmarkCategory>(filter.Category, true, out var cat))
-            query = query.Where(l => l.Category == cat);
+        if (!string.IsNullOrEmpty(filter.Category))
+            query = query.Where(l => l.Category.ToLower() == filter.Category.ToLower());
 
         if (filter.MinRating.HasValue)
             query = query.Where(l => l.AverageRating >= filter.MinRating.Value);
@@ -68,14 +68,13 @@ public class LandmarkService : ILandmarkService
                 Location = l.Location,
                 EntryFee = l.EntryFee,
                 AverageRating = l.AverageRating,
-                Category = l.Category.ToString(),
+                Category = l.Category,
                 CityId = l.CityId,
                 CityName = cities.FirstOrDefault(c => c.Id == l.CityId)?.NameEn ?? "",
                 Images = images.Where(i => i.LandmarkId == l.Id).Select(i => i.ImageUrl).ToList()
             });
     }
 
-    // ───── Get Landmark By ID ─────
     public async Task<LandmarkDto> GetLandmarkByIdAsync(int id)
     {
         var landmark = await _unitOfWork.Repository<Landmark>().GetByIdAsync(id)
@@ -96,19 +95,15 @@ public class LandmarkService : ILandmarkService
             Location = landmark.Location,
             EntryFee = landmark.EntryFee,
             AverageRating = landmark.AverageRating,
-            Category = landmark.Category.ToString(),
+            Category = landmark.Category,
             CityId = landmark.CityId,
             CityName = cities.FirstOrDefault(c => c.Id == landmark.CityId)?.NameEn ?? "",
             Images = images.Where(i => i.LandmarkId == landmark.Id).Select(i => i.ImageUrl).ToList()
         };
     }
 
-    // ───── Create Landmark ─────
     public async Task<LandmarkDto> CreateLandmarkAsync(CreateLandmarkRequest request)
     {
-        if (!Enum.TryParse<LandmarkCategory>(request.Category, true, out var category))
-            throw new BusinessRuleException("Invalid category");
-
         var landmark = new Landmark
         {
             NameAr = request.NameAr,
@@ -116,7 +111,7 @@ public class LandmarkService : ILandmarkService
             Description = request.Description,
             Location = request.Location,
             EntryFee = request.EntryFee,
-            Category = category,
+            Category = request.Category,
             CityId = request.CityId
         };
 
@@ -132,28 +127,24 @@ public class LandmarkService : ILandmarkService
             Location = landmark.Location,
             EntryFee = landmark.EntryFee,
             AverageRating = landmark.AverageRating,
-            Category = landmark.Category.ToString(),
+            Category = landmark.Category,
             CityId = landmark.CityId,
             CityName = "",
             Images = new()
         };
     }
 
-    // ───── Update Landmark ─────
     public async Task<LandmarkDto> UpdateLandmarkAsync(int id, UpdateLandmarkRequest request)
     {
         var landmark = await _unitOfWork.Repository<Landmark>().GetByIdAsync(id)
             ?? throw new NotFoundException("Landmark not found");
-
-        if (!Enum.TryParse<LandmarkCategory>(request.Category, true, out var category))
-            throw new BusinessRuleException("Invalid category");
 
         landmark.NameAr = request.NameAr;
         landmark.NameEn = request.NameEn;
         landmark.Description = request.Description;
         landmark.Location = request.Location;
         landmark.EntryFee = request.EntryFee;
-        landmark.Category = category;
+        landmark.Category = request.Category;
         landmark.CityId = request.CityId;
 
         _unitOfWork.Repository<Landmark>().Update(landmark);
@@ -171,14 +162,13 @@ public class LandmarkService : ILandmarkService
             Location = landmark.Location,
             EntryFee = landmark.EntryFee,
             AverageRating = landmark.AverageRating,
-            Category = landmark.Category.ToString(),
+            Category = landmark.Category,
             CityId = landmark.CityId,
             CityName = cities.FirstOrDefault(c => c.Id == landmark.CityId)?.NameEn ?? "",
             Images = images.Where(i => i.LandmarkId == landmark.Id).Select(i => i.ImageUrl).ToList()
         };
     }
 
-    // ───── Delete Landmark ─────
     public async Task DeleteLandmarkAsync(int id)
     {
         var landmark = await _unitOfWork.Repository<Landmark>().GetByIdAsync(id)
@@ -189,7 +179,6 @@ public class LandmarkService : ILandmarkService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    // ───── Upload Image ─────
     public async Task<string> UploadImageAsync(int landmarkId, IFormFile file)
     {
         var landmark = await _unitOfWork.Repository<Landmark>().GetByIdAsync(landmarkId)
@@ -197,19 +186,13 @@ public class LandmarkService : ILandmarkService
 
         var url = await _cloudinaryService.UploadImageAsync(file, "landmarks");
 
-        var image = new LandmarkImage
-        {
-            LandmarkId = landmarkId,
-            ImageUrl = url
-        };
-
+        var image = new LandmarkImage { LandmarkId = landmarkId, ImageUrl = url };
         await _unitOfWork.Repository<LandmarkImage>().AddAsync(image);
         await _unitOfWork.SaveChangesAsync();
 
         return url;
     }
 
-    // ───── Delete Image ─────
     public async Task DeleteImageAsync(int landmarkId, int imageId)
     {
         var image = await _unitOfWork.Repository<LandmarkImage>().GetByIdAsync(imageId)
@@ -219,7 +202,6 @@ public class LandmarkService : ILandmarkService
             throw new BusinessRuleException("Image does not belong to this landmark");
 
         await _cloudinaryService.DeleteImageAsync(image.ImageUrl);
-
         _unitOfWork.Repository<LandmarkImage>().Delete(image);
         await _unitOfWork.SaveChangesAsync();
     }

@@ -225,6 +225,7 @@ public class GuideService : IGuideService
 
         return new GuideProfileDto
         {
+            Id = profile.Id,
             UserId = user.Id,
             FullName = user.FullName,
             Email = user.Email!,

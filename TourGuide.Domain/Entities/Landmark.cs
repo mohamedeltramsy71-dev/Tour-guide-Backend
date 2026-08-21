@@ -1,4 +1,4 @@
-﻿using TourGuide.Domain.Enums;
+﻿// TourGuide.Domain/Entities/Landmark.cs
 
 namespace TourGuide.Domain.Entities;
 
@@ -11,7 +11,7 @@ public class Landmark
     public string? Location { get; set; }
     public decimal EntryFee { get; set; } = 0;
     public double AverageRating { get; set; } = 0;
-    public LandmarkCategory Category { get; set; }
+    public string Category { get; set; } = string.Empty;  // ← غيرنا من enum لـ string
     public bool IsDeleted { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
