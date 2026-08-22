@@ -13,8 +13,15 @@ public class PackageDto
     public string CityNameEn { get; set; } = string.Empty;
     public string GuideId { get; set; } = string.Empty;
     public string GuideName { get; set; } = string.Empty;
-    public List<string> Images { get; set; } = [];
+    public int GuideProfileId { get; set; }
+    public List<PackageImageDto> Images { get; set; } = [];
     public List<PackageLandmarkDto> Landmarks { get; set; } = [];
+}
+
+public class PackageImageDto
+{
+    public int Id { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 }
 
 public class PackageLandmarkDto

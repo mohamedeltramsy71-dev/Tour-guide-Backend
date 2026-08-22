@@ -276,7 +276,8 @@ public class PackageService : IPackageService
             CityNameEn = city?.NameEn ?? string.Empty,
             GuideId = guideUserId,
             GuideName = guideName,
-            Images = images.Select(i => i.ImageUrl).ToList(),
+            GuideProfileId = package.GuideProfileId,
+            Images = images.Select(i => new PackageImageDto { Id = i.Id, ImageUrl = i.ImageUrl }).ToList(),
             Landmarks = landmarkDtos
         };
     }
