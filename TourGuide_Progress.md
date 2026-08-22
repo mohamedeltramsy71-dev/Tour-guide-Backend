@@ -20,7 +20,7 @@ TourGuide.sln
 │   │   ├── GuideProfile.cs           ✅
 │   │   ├── City.cs                   ✅
 │   │   ├── GuideCity.cs              ✅
-│   │   ├── Landmark.cs               ✅
+│   │   ├── Landmark.cs               ✅ (Category → string)
 │   │   ├── LandmarkImage.cs          ✅
 │   │   ├── Package.cs                ✅
 │   │   ├── PackageImage.cs           ✅
@@ -37,7 +37,7 @@ TourGuide.sln
 │   │   ├── LandmarkCategory.cs       ✅
 │   │   └── NotificationType.cs       ✅
 │   ├── Interfaces
-│   │   ├── IRepository.cs            ✅
+│   │   ├── IRepository.cs            ✅ (+ Include methods)
 │   │   ├── IUnitOfWork.cs            ✅
 │   │   └── IChatRepository.cs        ✅
 │   └── Exceptions
@@ -76,7 +76,7 @@ TourGuide.sln
 │   │   │   ├── UpdateGuideRequest.cs    ✅
 │   │   │   └── GuideListDto.cs          ✅
 │   │   ├── Package
-│   │   │   ├── PackageDto.cs               ✅
+│   │   │   ├── PackageDto.cs               ✅ (Images → List<PackageImageDto> {Id, ImageUrl} + GuideProfileId)
 │   │   │   ├── CreatePackageRequest.cs     ✅
 │   │   │   ├── UpdatePackageRequest.cs     ✅
 │   │   │   ├── AddLandmarkToPackage.cs     ✅
@@ -90,7 +90,7 @@ TourGuide.sln
 │   │   │   ├── BookingDto.cs               ✅
 │   │   │   ├── CreateBookingRequest.cs     ✅
 │   │   │   ├── RejectBookingRequest.cs     ✅
-│   │   │   └── BookingFilterParams.cs      ✅
+│   │   │   └── BookingFilterParams.cs      ✅ (Status → string not enum)
 │   │   ├── Payment
 │   │   │   ├── InitiatePaymentRequest.cs   ✅
 │   │   │   ├── InitiatePaymentResponse.cs  ✅
@@ -103,7 +103,7 @@ TourGuide.sln
 │   │   ├── Reviews
 │   │   │   ├── CreateReviewRequest.cs      ✅
 │   │   │   ├── UpdateReviewRequest.cs      ✅
-│   │   │   └── ReviewDto.cs                ✅
+│   │   │   └── ReviewDto.cs                ✅ (+ GuideName)
 │   │   ├── Notifications
 │   │   │   └── NotificationDto.cs          ✅
 │   │   └── Admin
@@ -117,7 +117,7 @@ TourGuide.sln
 │   ├── Interfaces
 │   │   ├── IAuthService.cs           ✅
 │   │   ├── IJwtService.cs            ✅
-│   │   ├── IEmailService.cs          ✅
+│   │   ├── IEmailService.cs          ✅ (+ SendNotificationEmailAsync)
 │   │   ├── ICloudinaryService.cs     ✅
 │   │   ├── IUserService.cs           ✅
 │   │   ├── ICityService.cs           ✅
@@ -131,20 +131,21 @@ TourGuide.sln
 │   │   ├── IChatService.cs           ✅
 │   │   ├── IReviewService.cs         ✅
 │   │   ├── INotificationService.cs   ✅
+│   │   ├── INotificationPushService.cs ✅ ← NEW
 │   │   └── IAdminService.cs          ✅
 │   ├── Services
-│   │   ├── AuthService.cs            ✅
+│   │   ├── AuthService.cs            ✅ (response wrapped {message, data} + Frontend links)
 │   │   ├── UserService.cs            ✅
 │   │   ├── CityService.cs            ✅
-│   │   ├── LandmarkService.cs        ✅
+│   │   ├── LandmarkService.cs        ✅ (Category enum → string)
 │   │   ├── GuideService.cs           ✅
-│   │   ├── PackageService.cs         ✅
+│   │   ├── PackageService.cs         ✅ (Images → PackageImageDto + GuideProfileId)
 │   │   ├── CustomTripService.cs      ✅
-│   │   ├── BookingService.cs         ✅ (Bug Fix: GuideProfileId + Notifications)
+│   │   ├── BookingService.cs         ✅ (Include Tourist + Guide + Package + Notifications)
 │   │   ├── PaymentService.cs         ✅
 │   │   ├── ChatService.cs            ✅
-│   │   ├── ReviewService.cs          ✅
-│   │   ├── NotificationService.cs    ✅
+│   │   ├── ReviewService.cs          ✅ (Include Tourist + GuideProfile)
+│   │   ├── NotificationService.cs    ✅ (Save DB + SignalR push + Email fire-and-forget)
 │   │   └── AdminService.cs           ✅ (Bug Fix: TopCities + GuideName)
 │
 ├── TourGuide.Infrastructure
@@ -161,19 +162,20 @@ TourGuide.sln
 │   │       ├── NotificationConfiguration.cs    ✅
 │   │       └── PaymentConfiguration.cs         ✅
 │   ├── Repositories
-│   │   ├── GenericRepository.cs      ✅
+│   │   ├── GenericRepository.cs      ✅ (+ Include methods)
 │   │   ├── UnitOfWork.cs             ✅
 │   │   └── ChatRepository.cs         ✅
 │   ├── Services
 │   │   ├── EmailSettings.cs          ✅
-│   │   ├── EmailService.cs           ✅ (implements IEmailService)
+│   │   ├── EmailService.cs           ✅ (+ SendNotificationEmailAsync with HTML template)
 │   │   ├── CloudinarySettings.cs     ✅
-│   │   ├── CloudinaryService.cs      ✅ (implements ICloudinaryService)
+│   │   ├── CloudinaryService.cs      ✅
 │   │   ├── PaymobSettings.cs         ✅
-│   │   └── PaymobService.cs          ✅
+│   │   ├── PaymobService.cs          ✅
+│   │   └── NotificationPushService.cs ✅ ← NEW (IHubContext<NotificationHub>)
 │   ├── Identity
 │   │   ├── JwtSettings.cs            ✅
-│   │   ├── JwtService.cs             ✅ (implements IJwtService)
+│   │   ├── JwtService.cs             ✅
 │   │   └── IdentitySeeder.cs         ✅
 │   └── Hubs
 │       ├── ChatHub.cs                ✅
@@ -181,9 +183,9 @@ TourGuide.sln
 │
 └── TourGuide.API
     ├── Controllers
-    │   ├── AuthController.cs              ✅ (9 endpoints)
+    │   ├── AuthController.cs              ✅ (9 endpoints — response {message,data} + Frontend links)
     │   ├── UsersController.cs             ✅ (3 endpoints)
-    │   ├── CitiesController.cs            ✅ (6 endpoints)
+    │   ├── CitiesController.cs            ✅ (6 endpoints + POST /upload-image)
     │   ├── LandmarksController.cs         ✅ (7 endpoints)
     │   ├── GuidesController.cs            ✅ (4 endpoints)
     │   ├── PackagesController.cs          ✅ (11 endpoints)
@@ -193,9 +195,9 @@ TourGuide.sln
     │   ├── ChatController.cs              ✅ (3 endpoints)
     │   ├── ReviewsController.cs           ✅ (4 endpoints)
     │   ├── NotificationsController.cs     ✅ (4 endpoints)
-    │   └── AdminController.cs             ✅ (17 endpoints) ← Bug Fix: أضفنا GET+DELETE users/{id}
+    │   └── AdminController.cs             ✅ (17 endpoints)
     ├── Extensions
-    │   └── ServiceCollectionExtensions.cs ✅
+    │   └── ServiceCollectionExtensions.cs ✅ (+ INotificationPushService registered)
     ├── Middlewares
     │   ├── GlobalExceptionHandler.cs      ✅
     │   └── RequestLoggingMiddleware.cs    ✅
@@ -217,32 +219,33 @@ TourGuide.sln
 | 00 | Solution & Project Setup | ✅ Done | |
 | 01 | Domain — Entities | ✅ Done | 15 entities |
 | 02 | Domain — Enums | ✅ Done | 5 enums |
-| 03 | Domain — Interfaces | ✅ Done | IRepository, IUnitOfWork, IChatRepository |
+| 03 | Domain — Interfaces | ✅ Done | IRepository (+ Include methods), IUnitOfWork, IChatRepository |
 | 04 | Domain — Exceptions | ✅ Done | 4 exceptions |
 | 05 | Infrastructure — AppDbContext + Configurations | ✅ Done | 9 configurations |
-| 06 | Infrastructure — Generic Repository + UnitOfWork | ✅ Done | |
+| 06 | Infrastructure — Generic Repository + UnitOfWork | ✅ Done | + Include methods |
 | 07 | Infrastructure — Identity Setup | ✅ Done | Roles + Admin seeder |
 | 08 | Infrastructure — JWT Generation | ✅ Done | implements IJwtService |
-| 09 | Infrastructure — Email Service | ✅ Done | Gmail SMTP ✅ |
+| 09 | Infrastructure — Email Service | ✅ Done | Gmail SMTP ✅ + SendNotificationEmailAsync |
 | 10 | Infrastructure — Cloudinary Service | ✅ Done | Cloudinary keys ✅ |
 | 11 | Infrastructure — Paymob Service | ✅ Done | Paymob Sandbox keys ✅ |
 | 12 | Infrastructure — SignalR Hubs | ✅ Done | ChatHub + NotificationHub |
-| 13 | Auth | ✅ Done | 9 endpoints — Register ✅ Login ✅ Email Confirm ✅ |
+| 12b | Infrastructure — NotificationPushService | ✅ Done | ← NEW — IHubContext push |
+| 13 | Auth | ✅ Done | 9 endpoints — response {message,data} — Frontend links |
 | 14 | User | ✅ Done | 3 endpoints — Avatar Upload ✅ |
-| 15 | Cities & Landmarks | ✅ Done | 6 + 7 endpoints |
+| 15 | Cities & Landmarks | ✅ Done | 6+7 endpoints + cities/upload-image |
 | 16 | Guide | ✅ Done | 4 endpoints |
-| 17 | Packages | ✅ Done | 11 endpoints |
+| 17 | Packages | ✅ Done | 11 endpoints — Images → PackageImageDto + GuideProfileId |
 | 18 | Custom Trip | ✅ Done | 3 endpoints |
-| 19 | Bookings | ✅ Done | 9 endpoints — Bug Fix: GuideProfileId من Package أوتوماتيك ✅ |
+| 19 | Bookings | ✅ Done | 9 endpoints — Includes + Notifications + enum fix |
 | 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook ⏳ E2E Test |
 | 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub — SignalR ⏳ وقت الـ Frontend |
-| 22 | Reviews | ✅ Done | 4 endpoints |
-| 23 | Notifications | ✅ Done | 4 endpoints — Bug Fix: Triggers في BookingService ✅ |
+| 22 | Reviews | ✅ Done | 4 endpoints + Include Tourist + GuideProfile + GuideName |
+| 23 | Notifications | ✅ Done | 4 endpoints — DB + SignalR push + Email fire-and-forget |
 | 24 | Admin Dashboard | ✅ Done | 17 endpoints — Bug Fix: TopCities + GuideName + GET/DELETE users/{id} ✅ |
 | 25 | API — Global Exception Middleware | ✅ Done | |
 | 26 | API — DI Registration + Program.cs | ✅ Done | |
 | 27 | API — Swagger + JWT + CORS | ✅ Done | |
-| 28 | EF Core — Migrations + Seed Data | ✅ Done | TourGuideDb ✅ |
+| 28 | EF Core — Migrations + Seed Data | ✅ Done | + AddCategoriesTable + ChangeLandmarkCategoryToString + Bookings enum SQL fix |
 | 29 | Testing & Verification | ✅ Done | كل الـ REST APIs متيستة ✅ |
 | 30 | Deployment | ✅ Done | https://tourguidee.runasp.net ✅ |
 | 31 | Paymob Webhook Config | ✅ Done | URL حُط في Paymob Dashboard ✅ — E2E Test ⏳ |
@@ -252,6 +255,33 @@ TourGuide.sln
 | 35 | Google OAuth E2E Test | ⏳ Pending | وقت صفحة الـ Login في الـ Frontend |
 | 36 | Paymob Webhook E2E Test | ⏳ Pending | أول ما يكون في يوزرات حقيقيين |
 | 37 | CORS — Production Frontend URL | ⏳ Pending | لما الـ Frontend يتحط على Vercel |
+
+---
+
+## 🔧 Backend Fixes Log
+
+| Fix | File(s) |
+|-----|---------|
+| Auth response wrapped `{ message, data }` | `AuthController.cs` |
+| Reset/Confirm Email links → Frontend URL | `AuthController.cs` / `AuthService.cs` |
+| IRepository + GenericRepository — Include methods added | `IRepository.cs` + `GenericRepository.cs` |
+| ReviewService — Include Tourist + GuideProfile | `ReviewService.cs` |
+| ReviewDto — added GuideName | `ReviewDto.cs` |
+| BookingService — Include Tourist + Guide + Package | `BookingService.cs` |
+| BookingFilterParams.Status — string not enum | `BookingFilterParams.cs` |
+| CitiesController — POST `/api/cities/upload-image` added | `CitiesController.cs` |
+| Landmark.Category — enum → string | `Landmark.cs` + `LandmarkService.cs` |
+| Migration: AddCategoriesTable | `TourGuide.Infrastructure` |
+| Migration: ChangeLandmarkCategoryToString | `TourGuide.Infrastructure` |
+| Bookings BookingStatus enum fix (string → int in DB) | SQL UPDATE |
+| PackageDto.Images → `List<PackageImageDto> { Id, ImageUrl }` | `PackageDto.cs` + `PackageService.cs` |
+| PackageDto.GuideProfileId added | `PackageDto.cs` + `PackageService.cs` |
+| INotificationPushService interface added | `INotificationPushService.cs` ← NEW |
+| NotificationPushService implementation added | `NotificationPushService.cs` ← NEW |
+| NotificationService — SignalR push + Email fire-and-forget | `NotificationService.cs` |
+| IEmailService — SendNotificationEmailAsync added | `IEmailService.cs` |
+| EmailService — SendNotificationEmailAsync HTML template | `EmailService.cs` |
+| ServiceCollectionExtensions — INotificationPushService registered | `ServiceCollectionExtensions.cs` |
 
 ---
 
@@ -274,7 +304,7 @@ TourGuide.sln
 - [x] `GuideProfile` — Bio, ExperienceYears, AverageRating, IsApproved, IsSuspended, LanguagesJson
 - [x] `City` — NameAr, NameEn, Description, ImageUrl, IsDeleted
 - [x] `GuideCity` — composite key (GuideProfileId, CityId)
-- [x] `Landmark` — NameAr, NameEn, Category, EntryFee, CityId, IsDeleted
+- [x] `Landmark` — NameAr, NameEn, Category (string), EntryFee, CityId, IsDeleted
 - [x] `LandmarkImage` — ImageUrl, PublicId, LandmarkId
 - [x] `Package` — Title, Price, DurationDays, MaxPersons, CityId, GuideProfileId, IsDeleted
 - [x] `PackageImage` — ImageUrl, PublicId, PackageId
@@ -297,7 +327,7 @@ TourGuide.sln
 ---
 
 ### 03 — Domain — Interfaces ✅
-- [x] `IRepository<T>` — GetById, GetAll, Find, FindOne, Add, Update, Delete, Exists, Count
+- [x] `IRepository<T>` — GetById, GetAll, Find, FindOne, Add, Update, Delete, Exists, Count + **Include methods**
 - [x] `IUnitOfWork` — Repository<T>(), SaveChangesAsync()
 - [x] `IChatRepository` — custom chat queries
 
@@ -320,7 +350,7 @@ TourGuide.sln
 ---
 
 ### 06 — Infrastructure — Repository + UnitOfWork ✅
-- [x] `GenericRepository<T>` — implements IRepository<T> with EF Core
+- [x] `GenericRepository<T>` — implements IRepository<T> with EF Core + **Include methods**
 - [x] `ChatRepository` — custom queries للـ chat
 - [x] `UnitOfWork` — Dictionary of repositories + SaveChangesAsync
 
@@ -344,6 +374,7 @@ TourGuide.sln
 - [x] `EmailSettings` — Host, Port, Username, Password, From
 - [x] `EmailService : IEmailService` — MailKit SMTP + StartTls
 - [x] Templates: Confirmation, Reset Password, Guide Rejection, Guide Approval
+- [x] **`SendNotificationEmailAsync`** — HTML template with icon per NotificationType ← NEW
 - [x] Gmail configured ✅ — tested ✅
 
 ---
@@ -378,6 +409,8 @@ TourGuide.sln
   - `SendMessage` — save to DB + push to booking group
   - `MarkAsRead` — set IsRead = true
 - [x] `NotificationHub` — push via `IHubContext<NotificationHub>`
+- [x] `NotificationPushService : INotificationPushService` — **← NEW**
+  - Pushes `NotificationReceived` event to `user_{userId}` group
 - [x] Mapped: `/hubs/chat` + `/hubs/notifications`
 - [ ] ⏳ SignalR live test — وقت الـ Frontend
 
@@ -388,6 +421,8 @@ TourGuide.sln
 - [x] `IAuthService` interface
 - [x] `AuthService` — Register, Login, GoogleLogin, ConfirmEmail, ForgetPassword, ResetPassword, RefreshToken, Logout, ChangePassword
 - [x] `AuthController` — 9 endpoints
+- [x] **Response wrapped `{ message, data }`** ← Fix
+- [x] **Reset/Confirm Email links → Frontend URL** ← Fix
 - [x] Tested ✅ — Register + Email Confirmation + Login working
 
 ---
@@ -403,7 +438,9 @@ TourGuide.sln
 ### 15 — Cities & Landmarks ✅
 - [x] DTOs: CityDto, CreateCityRequest, UpdateCityRequest, LandmarkDto, CreateLandmarkRequest, UpdateLandmarkRequest, LandmarkFilterParams
 - [x] `ICityService`, `CityService`, `CitiesController` — 6 endpoints (CRUD + trending)
+- [x] **POST `/api/cities/upload-image`** ← Fix (city image upload)
 - [x] `ILandmarkService`, `LandmarkService`, `LandmarksController` — 7 endpoints (CRUD + images)
+- [x] **Landmark.Category — enum → string** ← Fix
 - [x] Filter params: cityId, category, minRating, maxPrice, search, sortBy, sortDir, page, pageSize
 
 ---
@@ -418,6 +455,8 @@ TourGuide.sln
 
 ### 17 — Packages ✅
 - [x] DTOs: PackageDto, CreatePackageRequest, UpdatePackageRequest, AddLandmarkToPackage, PackageFilterParams
+- [x] **PackageDto.Images → `List<PackageImageDto> { Id, ImageUrl }`** ← Fix
+- [x] **PackageDto.GuideProfileId added** ← Fix
 - [x] `IPackageService`, `PackageService`
 - [x] `PackagesController` — 11 endpoints (CRUD + toggle + landmarks + images + compare)
 
@@ -436,8 +475,11 @@ TourGuide.sln
 - [x] `IBookingService`, `BookingService`
 - [x] `BookingsController` — 9 endpoints
 - [x] Status flow: Pending → Confirmed/Rejected/Cancelled → Completed
+- [x] **Include Tourist + Guide + Package** ← Fix
+- [x] **BookingFilterParams.Status — string not enum** ← Fix
 - [x] Bug Fix: `GuideProfileId` بيتحط أوتوماتيك من الـ Package ✅
 - [x] Bug Fix: Endpoint اسمه `/accept` مش `/confirm` ✅
+- [x] Notifications triggered on every action ✅
 
 ---
 
@@ -464,7 +506,9 @@ TourGuide.sln
 
 ### 22 — Reviews ✅
 - [x] DTOs: CreateReviewRequest, UpdateReviewRequest, ReviewDto
+- [x] **ReviewDto.GuideName added** ← Fix
 - [x] `IReviewService`, `ReviewService`
+- [x] **Include Tourist + GuideProfile** ← Fix
 - [x] `ReviewsController` — 4 endpoints
 - [x] Business rules: only after Completed booking, one review per booking
 - [x] Auto-recalculate GuideProfile.AverageRating on every change
@@ -474,10 +518,11 @@ TourGuide.sln
 ### 23 — Notifications ✅
 - [x] DTOs: NotificationDto
 - [x] `INotificationService`, `NotificationService`
+- [x] **`INotificationPushService` interface** ← NEW
+- [x] **`NotificationPushService`** — push via IHubContext ← NEW
 - [x] `NotificationsController` — 4 endpoints (list, mark-read, mark-all-read, count)
-- [x] Real-time push via IHubContext<NotificationHub>
+- [x] **Flow: Save DB → SignalR push → Email fire-and-forget** ← NEW
 - [x] Triggers: NewBooking, BookingAccepted, BookingRejected, PaymentConfirmed, NewMessage, GuideApproved, TripReminder
-- [x] Bug Fix: أضفنا `CreateNotificationAsync` في `BookingService` على كل action ✅
 - [x] Tested ✅ — BookingAccepted notification وصلت للـ Tourist
 
 ---
@@ -505,6 +550,7 @@ TourGuide.sln
 
 ### 26 — API — DI Registration + Program.cs ✅
 - [x] `ServiceCollectionExtensions` — AddDatabase, AddIdentityConfig, AddSettings, AddInfrastructureServices, AddRepositories, AddAuthServices, AddApplicationServices
+- [x] **`INotificationPushService` → `NotificationPushService` registered** ← NEW
 - [x] JWT Bearer Authentication
 - [x] CORS — AllowCredentials (for SignalR)
 - [x] SignalR — AddSignalR() + MapHub<ChatHub> + MapHub<NotificationHub>
@@ -523,6 +569,9 @@ TourGuide.sln
 ### 28 — EF Core Migrations ✅
 - [x] `InitialCreate` migration
 - [x] `Update-Database` — TourGuideDb created
+- [x] **`AddCategoriesTable` migration** ← Fix
+- [x] **`ChangeLandmarkCategoryToString` migration** ← Fix
+- [x] **Bookings BookingStatus — SQL UPDATE fix (string → int)** ← Fix
 - [x] Seed: Tourist, Guide, Admin roles + default Admin user
 
 ---

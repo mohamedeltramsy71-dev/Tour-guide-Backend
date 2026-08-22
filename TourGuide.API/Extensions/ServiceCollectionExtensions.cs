@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ICloudinaryService, CloudinaryService>();
+        services.AddScoped<INotificationPushService, NotificationPushService>();
         services.AddScoped<PaymobService>();
         services.AddHttpClient<PaymobService>();
         return services;
@@ -80,8 +81,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IPaymobService, PaymobService>();
-        services.AddScoped<IPaymentService, PaymentService>();
-        services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<INotificationService, NotificationService>();

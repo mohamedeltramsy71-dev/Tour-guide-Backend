@@ -1,4 +1,5 @@
-﻿using TourGuide.Application.DTOs.Notifications;
+﻿using Microsoft.AspNetCore.Identity;
+using TourGuide.Application.DTOs.Notifications;
 using TourGuide.Application.Interfaces;
 using TourGuide.Domain.Entities;
 using TourGuide.Domain.Enums;
@@ -10,10 +11,20 @@ namespace TourGuide.Application.Services;
 public class NotificationService : INotificationService
 {
     private readonly IUnitOfWork _uow;
+    private readonly INotificationPushService _push;
+    private readonly IEmailService _emailService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public NotificationService(IUnitOfWork uow)
+    public NotificationService(
+        IUnitOfWork uow,
+        INotificationPushService push,
+        IEmailService emailService,
+        UserManager<ApplicationUser> userManager)
     {
         _uow = uow;
+        _push = push;
+        _emailService = emailService;
+        _userManager = userManager;
     }
 
     public async Task<IEnumerable<NotificationDto>> GetMyNotificationsAsync(string userId, int page, int pageSize)
@@ -62,6 +73,7 @@ public class NotificationService : INotificationService
 
     public async Task CreateNotificationAsync(string userId, string message, NotificationType type, int? bookingId = null)
     {
+        // 1. Save to DB
         var notification = new Notification
         {
             UserId = userId,
@@ -74,6 +86,23 @@ public class NotificationService : INotificationService
 
         await _uow.Repository<Notification>().AddAsync(notification);
         await _uow.SaveChangesAsync();
+
+        var dto = MapToDto(notification);
+
+        // 2. SignalR push
+        await _push.PushAsync(userId, dto);
+
+        // 3. Email — fire and forget
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user != null && !string.IsNullOrEmpty(user.Email))
+        {
+            _ = _emailService.SendNotificationEmailAsync(
+                user.Email,
+                user.FullName ?? "User",
+                message,
+                type
+            );
+        }
     }
 
     private static NotificationDto MapToDto(Notification n) => new()

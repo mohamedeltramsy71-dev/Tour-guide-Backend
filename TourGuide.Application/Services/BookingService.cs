@@ -73,7 +73,7 @@ public class BookingService : IBookingService
                 (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
             q => q.Include(b => b.Tourist)
                   .Include(b => b.GuideProfile).ThenInclude(g => g.User)
-                  .Include(b => b.Package)
+                  .Include(b => (object)b.Package!)
         );
 
         return bookings
@@ -90,7 +90,7 @@ public class BookingService : IBookingService
             b => b.Id == id,
             q => q.Include(b => b.Tourist)
                   .Include(b => b.GuideProfile).ThenInclude(g => g.User)
-                  .Include(b => b.Package)
+                  .Include(b => (object)b.Package!)
         );
 
         var booking = bookings.FirstOrDefault()
@@ -121,7 +121,7 @@ public class BookingService : IBookingService
                 (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
             q => q.Include(b => b.Tourist)
                   .Include(b => b.GuideProfile).ThenInclude(g => g.User)
-                  .Include(b => b.Package)
+                  .Include(b => (object)b.Package!)
         );
 
         return bookings
@@ -203,7 +203,7 @@ public class BookingService : IBookingService
                 (!filters.ToDate.HasValue || b.StartDate <= filters.ToDate),
             q => q.Include(b => b.Tourist)
                   .Include(b => b.GuideProfile).ThenInclude(g => g.User)
-                  .Include(b => b.Package)
+                  .Include(b => (object)b.Package!)
         );
 
         return bookings

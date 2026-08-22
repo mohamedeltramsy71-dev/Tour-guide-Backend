@@ -1,4 +1,6 @@
-﻿namespace TourGuide.Application.Interfaces;
+﻿using TourGuide.Domain.Enums;
+
+namespace TourGuide.Application.Interfaces;
 
 public interface IEmailService
 {
@@ -6,4 +8,5 @@ public interface IEmailService
     Task SendPasswordResetEmailAsync(string email, string fullName, string resetLink);
     Task SendGuideRejectionEmailAsync(string email, string fullName, string reason);
     Task SendGuideApprovalEmailAsync(string email, string fullName);
+    Task SendNotificationEmailAsync(string email, string fullName, string message, NotificationType type);
 }
