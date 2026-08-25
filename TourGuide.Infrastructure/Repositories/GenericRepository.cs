@@ -46,7 +46,7 @@ public class GenericRepository<T> : IRepository<T> where T : class
 
     public async Task<IEnumerable<T>> FindWithNestedIncludeAsync(
         Expression<Func<T, bool>> predicate,
-        Func<IQueryable<T>, IIncludableQueryable<T, object>> include)
+        Func<IQueryable<T>, IIncludableQueryable<T, object?>> include)
     {
         IQueryable<T> query = _dbSet.Where(predicate);
         query = include(query);

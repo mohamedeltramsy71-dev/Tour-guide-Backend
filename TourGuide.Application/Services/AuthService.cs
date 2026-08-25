@@ -66,11 +66,13 @@ public class AuthService : IAuthService
 
         return new LoginResponse
         {
+            UserId = user.Id,
             AccessToken = string.Empty,
             RefreshToken = string.Empty,
             Role = role,
             FullName = user.FullName,
-            Email = user.Email!
+            Email = user.Email!,
+            AvatarUrl = user.AvatarUrl
         };
     }
 
@@ -103,11 +105,13 @@ public class AuthService : IAuthService
 
         return new LoginResponse
         {
+            UserId = user.Id,
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
             Role = role,
             FullName = user.FullName,
-            Email = user.Email!
+            Email = user.Email!,
+            AvatarUrl = user.AvatarUrl
         };
     }
 
@@ -158,11 +162,13 @@ public class AuthService : IAuthService
 
         return new LoginResponse
         {
+            UserId = user.Id,
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
             Role = role,
             FullName = user.FullName,
-            Email = user.Email!
+            Email = user.Email!,
+            AvatarUrl = user.AvatarUrl
         };
     }
 
@@ -228,11 +234,13 @@ public class AuthService : IAuthService
 
         return new LoginResponse
         {
+            UserId = user.Id,
             AccessToken = accessToken,
             RefreshToken = newRefreshToken.Token,
             Role = roles.FirstOrDefault() ?? "Tourist",
             FullName = user.FullName,
-            Email = user.Email!
+            Email = user.Email!,
+            AvatarUrl = user.AvatarUrl
         };
     }
 
