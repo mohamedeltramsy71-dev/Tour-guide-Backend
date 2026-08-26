@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using TourGuide.Application.Interfaces;
@@ -10,10 +11,12 @@ namespace TourGuide.Infrastructure.Services;
 public class EmailService : IEmailService
 {
     private readonly EmailSettings _settings;
+    private readonly string _frontendBaseUrl;
 
-    public EmailService(IOptions<EmailSettings> settings)
+    public EmailService(IOptions<EmailSettings> settings, IConfiguration configuration)
     {
         _settings = settings.Value;
+        _frontendBaseUrl = configuration["Frontend:BaseUrl"] ?? "http://localhost:4200";
     }
 
     private async Task SendAsync(string toEmail, string toName, string subject, string htmlBody)
@@ -108,7 +111,7 @@ public class EmailService : IEmailService
               <div style="padding:32px;background:#FAF8F5">
                 <p style="font-size:18px">{icon} Hi {toName},</p>
                 <p style="font-size:16px;color:#1A2340">{message}</p>
-                <a href="http://localhost:4200" 
+                <a href="{_frontendBaseUrl}" 
                    style="background:#C85C3A;color:white;padding:12px 24px;
                           text-decoration:none;border-radius:6px;display:inline-block;margin-top:16px">
                   Open Rihla
@@ -139,7 +142,7 @@ public class EmailService : IEmailService
                             border-radius:4px;margin:16px 0;color:#1A2340;font-style:italic">
                   "{messagePreview}"
                 </div>
-                <a href="http://localhost:4200/chat" 
+                <a href="{_frontendBaseUrl}/chat" 
                    style="background:#C85C3A;color:white;padding:12px 24px;
                           text-decoration:none;border-radius:6px;display:inline-block;margin-top:8px">
                   Reply Now

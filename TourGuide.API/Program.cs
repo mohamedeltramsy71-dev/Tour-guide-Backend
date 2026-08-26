@@ -66,6 +66,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
         policy.WithOrigins(
             "http://localhost:4200",
+            "https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app",
             "https://tourguidee.runasp.net",
             "http://tourguidee.runasp.net",
             "https://tour-guide.runasp.net",
