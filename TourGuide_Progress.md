@@ -51,7 +51,7 @@ TourGuide.sln
 │   │   ├── Auth
 │   │   │   ├── RegisterRequest.cs       ✅
 │   │   │   ├── LoginRequest.cs          ✅
-│   │   │   ├── LoginResponse.cs         ✅
+│   │   │   ├── LoginResponse.cs         ✅ (+ UserId + AvatarUrl)
 │   │   │   ├── GoogleAuthRequest.cs     ✅
 │   │   │   ├── ForgetPasswordRequest.cs ✅
 │   │   │   ├── ResetPasswordRequest.cs  ✅
@@ -74,7 +74,7 @@ TourGuide.sln
 │   │   ├── Guide
 │   │   │   ├── GuideProfileDto.cs       ✅
 │   │   │   ├── UpdateGuideRequest.cs    ✅
-│   │   │   └── GuideListDto.cs          ✅
+│   │   │   └── GuideListDto.cs          ✅ (+ GuideProfileId = g.Id)
 │   │   ├── Package
 │   │   │   ├── PackageDto.cs               ✅ (Images → List<PackageImageDto> {Id, ImageUrl} + GuideProfileId)
 │   │   │   ├── CreatePackageRequest.cs     ✅
@@ -117,7 +117,7 @@ TourGuide.sln
 │   ├── Interfaces
 │   │   ├── IAuthService.cs           ✅
 │   │   ├── IJwtService.cs            ✅
-│   │   ├── IEmailService.cs          ✅ (+ SendNotificationEmailAsync)
+│   │   ├── IEmailService.cs          ✅ (+ SendNotificationEmailAsync + SendNewMessageEmailAsync)
 │   │   ├── ICloudinaryService.cs     ✅
 │   │   ├── IUserService.cs           ✅
 │   │   ├── ICityService.cs           ✅
@@ -128,22 +128,22 @@ TourGuide.sln
 │   │   ├── IBookingService.cs        ✅
 │   │   ├── IPaymentService.cs        ✅
 │   │   ├── IPaymobService.cs         ✅
-│   │   ├── IChatService.cs           ✅
+│   │   ├── IChatService.cs           ✅ (+ MarkMessagesAsReadAsync)
 │   │   ├── IReviewService.cs         ✅
 │   │   ├── INotificationService.cs   ✅
 │   │   ├── INotificationPushService.cs ✅ ← NEW
 │   │   └── IAdminService.cs          ✅
 │   ├── Services
-│   │   ├── AuthService.cs            ✅ (response wrapped {message, data} + Frontend links)
+│   │   ├── AuthService.cs            ✅ (response wrapped {message, data} + Frontend links + UserId + AvatarUrl)
 │   │   ├── UserService.cs            ✅
 │   │   ├── CityService.cs            ✅
 │   │   ├── LandmarkService.cs        ✅ (Category enum → string)
 │   │   ├── GuideService.cs           ✅
 │   │   ├── PackageService.cs         ✅ (Images → PackageImageDto + GuideProfileId)
-│   │   ├── CustomTripService.cs      ✅
+│   │   ├── CustomTripService.cs      ✅ (FindWithNestedIncludeAsync + GuideProfileId fix)
 │   │   ├── BookingService.cs         ✅ (Include Tourist + Guide + Package + Notifications)
 │   │   ├── PaymentService.cs         ✅
-│   │   ├── ChatService.cs            ✅
+│   │   ├── ChatService.cs            ✅ (+ MarkMessagesAsReadAsync)
 │   │   ├── ReviewService.cs          ✅ (Include Tourist + GuideProfile)
 │   │   ├── NotificationService.cs    ✅ (Save DB + SignalR push + Email fire-and-forget)
 │   │   └── AdminService.cs           ✅ (Bug Fix: TopCities + GuideName)
@@ -164,10 +164,10 @@ TourGuide.sln
 │   ├── Repositories
 │   │   ├── GenericRepository.cs      ✅ (+ Include methods)
 │   │   ├── UnitOfWork.cs             ✅
-│   │   └── ChatRepository.cs         ✅
+│   │   └── ChatRepository.cs         ✅ (+ OrderBy fix + Include GuideProfile)
 │   ├── Services
 │   │   ├── EmailSettings.cs          ✅
-│   │   ├── EmailService.cs           ✅ (+ SendNotificationEmailAsync with HTML template)
+│   │   ├── EmailService.cs           ✅ (+ SendNotificationEmailAsync + SendNewMessageEmailAsync)
 │   │   ├── CloudinarySettings.cs     ✅
 │   │   ├── CloudinaryService.cs      ✅
 │   │   ├── PaymobSettings.cs         ✅
@@ -178,7 +178,7 @@ TourGuide.sln
 │   │   ├── JwtService.cs             ✅
 │   │   └── IdentitySeeder.cs         ✅
 │   └── Hubs
-│       ├── ChatHub.cs                ✅
+│       ├── ChatHub.cs                ✅ (+ JoinBookingGroup + SenderName + Email on message)
 │       └── NotificationHub.cs        ✅
 │
 └── TourGuide.API
@@ -192,7 +192,7 @@ TourGuide.sln
     │   ├── CustomTripsController.cs       ✅ (3 endpoints)
     │   ├── BookingsController.cs          ✅ (9 endpoints)
     │   ├── PaymentsController.cs          ✅ (3 endpoints)
-    │   ├── ChatController.cs              ✅ (3 endpoints)
+    │   ├── ChatController.cs              ✅ (4 endpoints + PUT /{bookingId}/read)
     │   ├── ReviewsController.cs           ✅ (4 endpoints)
     │   ├── NotificationsController.cs     ✅ (4 endpoints)
     │   └── AdminController.cs             ✅ (17 endpoints)
@@ -212,7 +212,7 @@ TourGuide.sln
 
 ---
 
-## ✅ Progress Overview
+## ✅ Progress Overview — ALL DONE 🎉
 
 | # | Module | Status | Notes |
 |---|--------|--------|-------|
@@ -225,7 +225,7 @@ TourGuide.sln
 | 06 | Infrastructure — Generic Repository + UnitOfWork | ✅ Done | + Include methods |
 | 07 | Infrastructure — Identity Setup | ✅ Done | Roles + Admin seeder |
 | 08 | Infrastructure — JWT Generation | ✅ Done | implements IJwtService |
-| 09 | Infrastructure — Email Service | ✅ Done | Gmail SMTP ✅ + SendNotificationEmailAsync |
+| 09 | Infrastructure — Email Service | ✅ Done | Gmail SMTP ✅ + SendNotificationEmailAsync + SendNewMessageEmailAsync |
 | 10 | Infrastructure — Cloudinary Service | ✅ Done | Cloudinary keys ✅ |
 | 11 | Infrastructure — Paymob Service | ✅ Done | Paymob Sandbox keys ✅ |
 | 12 | Infrastructure — SignalR Hubs | ✅ Done | ChatHub + NotificationHub |
@@ -235,25 +235,25 @@ TourGuide.sln
 | 15 | Cities & Landmarks | ✅ Done | 6+7 endpoints + cities/upload-image |
 | 16 | Guide | ✅ Done | 4 endpoints |
 | 17 | Packages | ✅ Done | 11 endpoints — Images → PackageImageDto + GuideProfileId |
-| 18 | Custom Trip | ✅ Done | 3 endpoints |
+| 18 | Custom Trip | ✅ Done | 3 endpoints — FindWithNestedIncludeAsync fix ✅ |
 | 19 | Bookings | ✅ Done | 9 endpoints — Includes + Notifications + enum fix |
-| 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook ⏳ E2E Test |
-| 21 | Chat | ✅ Done | 3 endpoints + SignalR Hub — SignalR ⏳ وقت الـ Frontend |
+| 20 | Payment | ✅ Done | 3 endpoints — Paymob Approved ✅ — Webhook E2E tested ✅ |
+| 21 | Chat | ✅ Done | 4 endpoints + SignalR Hub — tested with Frontend ✅ |
 | 22 | Reviews | ✅ Done | 4 endpoints + Include Tourist + GuideProfile + GuideName |
-| 23 | Notifications | ✅ Done | 4 endpoints — DB + SignalR push + Email fire-and-forget |
+| 23 | Notifications | ✅ Done | 4 endpoints — DB + SignalR push + Email — tested with Frontend ✅ |
 | 24 | Admin Dashboard | ✅ Done | 17 endpoints — Bug Fix: TopCities + GuideName + GET/DELETE users/{id} ✅ |
 | 25 | API — Global Exception Middleware | ✅ Done | |
 | 26 | API — DI Registration + Program.cs | ✅ Done | |
 | 27 | API — Swagger + JWT + CORS | ✅ Done | |
 | 28 | EF Core — Migrations + Seed Data | ✅ Done | + AddCategoriesTable + ChangeLandmarkCategoryToString + Bookings enum SQL fix |
-| 29 | Testing & Verification | ✅ Done | كل الـ REST APIs متيستة ✅ |
+| 29 | Testing & Verification | ✅ Done | كل الـ APIs متيستة مع الـ Frontend ✅ |
 | 30 | Deployment | ✅ Done | https://tourguidee.runasp.net ✅ |
-| 31 | Paymob Webhook Config | ✅ Done | URL حُط في Paymob Dashboard ✅ — E2E Test ⏳ |
-| 32 | Google OAuth Config | ✅ Done | Origins + Redirect URIs على Google Console ✅ |
-| 33 | SignalR Chat Test | ⏳ Pending | وقت صفحة الـ Chat في الـ Frontend |
-| 34 | SignalR Notifications Test | ⏳ Pending | وقت صفحة الـ Notifications في الـ Frontend |
-| 35 | Google OAuth E2E Test | ⏳ Pending | وقت صفحة الـ Login في الـ Frontend |
-| 36 | Paymob Webhook E2E Test | ⏳ Pending | أول ما يكون في يوزرات حقيقيين |
+| 31 | Paymob Webhook Config | ✅ Done | URL set ✅ — E2E tested ✅ |
+| 32 | Google OAuth Config | ✅ Done | Origins + Redirect URIs ✅ — E2E tested with Frontend ✅ |
+| 33 | SignalR Chat Test | ✅ Done | tested with Frontend ✅ |
+| 34 | SignalR Notifications Test | ✅ Done | tested with Frontend ✅ |
+| 35 | Google OAuth E2E Test | ✅ Done | tested with Frontend ✅ |
+| 36 | Paymob Webhook E2E Test | ✅ Done | tested ✅ |
 | 37 | CORS — Production Frontend URL | ⏳ Pending | لما الـ Frontend يتحط على Vercel |
 
 ---
@@ -264,10 +264,14 @@ TourGuide.sln
 |-----|---------|
 | Auth response wrapped `{ message, data }` | `AuthController.cs` |
 | Reset/Confirm Email links → Frontend URL | `AuthController.cs` / `AuthService.cs` |
+| LoginResponse.UserId + AvatarUrl added | `LoginResponse.cs` |
+| AuthService — UserId + AvatarUrl في كل new LoginResponse | `AuthService.cs` |
 | IRepository + GenericRepository — Include methods added | `IRepository.cs` + `GenericRepository.cs` |
+| IRepository.FindWithNestedIncludeAsync → object? (nullable fix) | `IRepository.cs` + `GenericRepository.cs` |
 | ReviewService — Include Tourist + GuideProfile | `ReviewService.cs` |
 | ReviewDto — added GuideName | `ReviewDto.cs` |
 | BookingService — Include Tourist + Guide + Package | `BookingService.cs` |
+| BookingService — .Include(b => b.Package) removed cast | `BookingService.cs` |
 | BookingFilterParams.Status — string not enum | `BookingFilterParams.cs` |
 | CitiesController — POST `/api/cities/upload-image` added | `CitiesController.cs` |
 | Landmark.Category — enum → string | `Landmark.cs` + `LandmarkService.cs` |
@@ -281,7 +285,26 @@ TourGuide.sln
 | NotificationService — SignalR push + Email fire-and-forget | `NotificationService.cs` |
 | IEmailService — SendNotificationEmailAsync added | `IEmailService.cs` |
 | EmailService — SendNotificationEmailAsync HTML template | `EmailService.cs` |
+| IEmailService — SendNewMessageEmailAsync added | `IEmailService.cs` ← NEW |
+| EmailService — SendNewMessageEmailAsync implemented | `EmailService.cs` ← NEW |
 | ServiceCollectionExtensions — INotificationPushService registered | `ServiceCollectionExtensions.cs` |
+| ChatHub.OnConnectedAsync — user_{userId} group فقط (شيل DB query) | `ChatHub.cs` ← NEW |
+| ChatHub.JoinBookingGroup — method جديدة بيناديها الـ Frontend | `ChatHub.cs` ← NEW |
+| ChatHub.SendMessage — تحقق participant + SenderName + ISO CreatedAt + Email | `ChatHub.cs` ← NEW |
+| ChatHub — inject IEmailService + UserManager | `ChatHub.cs` ← NEW |
+| IChatService.MarkMessagesAsReadAsync added | `IChatService.cs` ← NEW |
+| ChatService.MarkMessagesAsReadAsync implemented | `ChatService.cs` ← NEW |
+| ChatController — PUT `/{bookingId}/read` endpoint added | `ChatController.cs` ← NEW |
+| ChatRepository.GetMessagesAsync — OrderBy بدل OrderByDescending | `ChatRepository.cs` ← NEW |
+| ChatRepository.GetBookingWithGuideAsync — أضاف Include(GuideProfile) | `ChatRepository.cs` ← NEW |
+| PaymentService + PaymobService (3-step flow) | `PaymentService.cs` + `PaymobService.cs` |
+| PaymentsController — initiate + webhook + status | `PaymentsController.cs` |
+| Payment + PaymentStatus entities | `Payment.cs` |
+| CustomTripService.GetAvailableGuidesAsync — استخدام FindWithNestedIncludeAsync | `CustomTripService.cs` ← NEW |
+| GuideListDto — GuideProfileId = g.Id added | `GuideListDto.cs` + `CustomTripService.cs` ← NEW |
+| AdminService — Bug Fix: TopCities NullReference على p.City | `AdminService.cs` |
+| AdminService — Bug Fix: GuideName join مع UserManager | `AdminService.cs` |
+| AdminController — GET + DELETE `/api/admin/users/{id}` added | `AdminController.cs` |
 
 ---
 
@@ -289,10 +312,10 @@ TourGuide.sln
 
 | Service | Status | Notes |
 |---------|--------|-------|
-| Gmail SMTP | ✅ Done | mohamedeltramsy71@gmail.com |
-| Cloudinary | ✅ Done | Cloud: dp1po0xxf |
-| Google OAuth | ✅ Done | Origins + Redirect URIs configured ✅ — E2E Test ⏳ |
-| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 — Webhook URL set ✅ |
+| Gmail SMTP | ✅ Done | mohamedeltramsy71@gmail.com — tested ✅ |
+| Cloudinary | ✅ Done | Cloud: dp1po0xxf — tested ✅ |
+| Google OAuth | ✅ Done | Origins + Redirect URIs configured ✅ — E2E tested with Frontend ✅ |
+| Paymob Sandbox | ✅ Done | Integration: 5853399 — Iframe: 1069052 — Webhook URL set ✅ — E2E tested ✅ |
 
 ---
 
@@ -375,6 +398,7 @@ TourGuide.sln
 - [x] `EmailService : IEmailService` — MailKit SMTP + StartTls
 - [x] Templates: Confirmation, Reset Password, Guide Rejection, Guide Approval
 - [x] **`SendNotificationEmailAsync`** — HTML template with icon per NotificationType ← NEW
+- [x] **`SendNewMessageEmailAsync`** — email on new chat message with link to /chat ← NEW
 - [x] Gmail configured ✅ — tested ✅
 
 ---
@@ -398,21 +422,23 @@ TourGuide.sln
 - [x] Paymob Sandbox configured ✅ — Integration: 5853399, Iframe: 1069052
 - [x] Payment Approved ✅ — tested with 3DS card
 - [x] Webhook URL set in Paymob Dashboard ✅ → https://tourguidee.runasp.net/api/payments/webhook
-- [ ] ⏳ Webhook E2E test — أول ما يكون في يوزرات حقيقيين
+- [x] Webhook E2E tested ✅
 
 ---
 
 ### 12 — Infrastructure — SignalR Hubs ✅
 - [x] `ChatHub`
-  - `OnConnectedAsync` — add to personal group + booking groups
+  - `OnConnectedAsync` — add to user_{userId} personal group only (no DB query) ← Fix
   - `OnDisconnectedAsync` — broadcast UserOffline
-  - `SendMessage` — save to DB + push to booking group
+  - `JoinBookingGroup` — new method called by Frontend on selectConversation ← NEW
+  - `SendMessage` — verify participant + SenderName + ISO CreatedAt + Email ← Fix
   - `MarkAsRead` — set IsRead = true
 - [x] `NotificationHub` — push via `IHubContext<NotificationHub>`
 - [x] `NotificationPushService : INotificationPushService` — **← NEW**
   - Pushes `NotificationReceived` event to `user_{userId}` group
 - [x] Mapped: `/hubs/chat` + `/hubs/notifications`
-- [ ] ⏳ SignalR live test — وقت الـ Frontend
+- [x] SignalR Chat tested with Frontend ✅
+- [x] SignalR Notifications tested with Frontend ✅
 
 ---
 
@@ -423,7 +449,8 @@ TourGuide.sln
 - [x] `AuthController` — 9 endpoints
 - [x] **Response wrapped `{ message, data }`** ← Fix
 - [x] **Reset/Confirm Email links → Frontend URL** ← Fix
-- [x] Tested ✅ — Register + Email Confirmation + Login working
+- [x] **LoginResponse.UserId + AvatarUrl added** ← Fix
+- [x] Tested ✅ — Register + Email Confirmation + Login + Google OAuth all working
 
 ---
 
@@ -467,6 +494,11 @@ TourGuide.sln
 - [x] `ICustomTripService`, `CustomTripService`
 - [x] `CustomTripsController` — 3 endpoints (calculate, available-guides, create)
 - [x] Price = Sum(landmark.EntryFee) × numberOfPersons × durationMultiplier + guideFixedFee
+- [x] **Fix: `GetAvailableGuidesAsync` → استخدم `FindWithNestedIncludeAsync`** ← Fix
+  - `.Include(g => g.User).Include(g => g.CoveredCities).ThenInclude(gc => gc.City)`
+  - Filter الـ CityId بيتعمل in-memory بعد الـ Include
+- [x] **Fix: `GuideListDto.GuideProfileId = g.Id` added** ← Fix
+- [x] Tested with Frontend ✅
 
 ---
 
@@ -491,16 +523,24 @@ TourGuide.sln
 - [x] HMAC-SHA512 webhook validation
 - [x] Payment Approved ✅ — tested with 3DS card
 - [x] Webhook URL set in Paymob Dashboard ✅
-- [ ] ⏳ Webhook E2E test — أول ما يكون في يوزرات
+- [x] Webhook E2E tested ✅
 
 ---
 
 ### 21 — Chat ✅
 - [x] DTOs: MessageDto, ConversationDto, SendMessageRequest
 - [x] `IChatRepository`, `ChatRepository`, `IChatService`, `ChatService`
-- [x] `ChatController` — 3 endpoints (conversations, messages, unread-count)
-- [x] SignalR: per-booking groups, real-time push, presence
-- [ ] ⏳ SignalR live test — وقت صفحة الـ Chat في الـ Frontend
+- [x] `ChatController` — 4 endpoints (conversations, messages, unread-count, **PUT /{bookingId}/read**)
+- [x] **Fix: ChatHub.OnConnectedAsync** — user_{userId} group فقط ← Fix
+- [x] **Fix: ChatHub.JoinBookingGroup** — method جديدة بيناديها الـ Frontend ← Fix
+- [x] **Fix: ChatHub.SendMessage** — participant check + SenderName + ISO CreatedAt + Email ← Fix
+- [x] **Fix: IChatService + ChatService.MarkMessagesAsReadAsync** ← Fix
+- [x] **Fix: ChatController PUT /{bookingId}/read** ← Fix
+- [x] **Fix: ChatRepository.GetMessagesAsync** — OrderBy بدل OrderByDescending ← Fix
+- [x] **Fix: ChatRepository.GetBookingWithGuideAsync** — Include(GuideProfile) ← Fix
+- [x] **Fix: IEmailService.SendNewMessageEmailAsync** — email on new message ← Fix
+- [x] SignalR: per-booking groups, real-time push, presence, onreconnected support
+- [x] Tested with Frontend ✅
 
 ---
 
@@ -523,7 +563,7 @@ TourGuide.sln
 - [x] `NotificationsController` — 4 endpoints (list, mark-read, mark-all-read, count)
 - [x] **Flow: Save DB → SignalR push → Email fire-and-forget** ← NEW
 - [x] Triggers: NewBooking, BookingAccepted, BookingRejected, PaymentConfirmed, NewMessage, GuideApproved, TripReminder
-- [x] Tested ✅ — BookingAccepted notification وصلت للـ Tourist
+- [x] Tested with Frontend ✅ — Notifications وصلت real-time + Email
 
 ---
 
@@ -579,6 +619,7 @@ TourGuide.sln
 ### 29 — Testing & Verification ✅
 - [x] Register + Email Confirmation — tested ✅
 - [x] Login (Tourist + Guide + Admin) — tested ✅
+- [x] Google OAuth E2E — tested with Frontend ✅
 - [x] Avatar Upload (Cloudinary) — tested ✅
 - [x] Cities & Landmarks CRUD — tested ✅
 - [x] Guide Profile Update + Approve — tested ✅
@@ -586,13 +627,12 @@ TourGuide.sln
 - [x] Create Booking (Tourist) — tested ✅
 - [x] Accept + Complete Booking (Guide) — tested ✅
 - [x] Initiate Payment (Paymob) — Approved ✅
+- [x] Paymob Webhook E2E — tested ✅
 - [x] Create Review — tested ✅
-- [x] Notifications — tested ✅
+- [x] Notifications — DB + SignalR + Email — tested with Frontend ✅
+- [x] SignalR Chat — real-time messages — tested with Frontend ✅
+- [x] Custom Trip — calculate + available-guides + create — tested ✅
 - [x] Admin Dashboard + Reports — tested ✅
-- [ ] ⏳ Paymob Webhook E2E — أول ما يكون في يوزرات
-- [ ] ⏳ SignalR Chat — وقت الـ Frontend
-- [ ] ⏳ SignalR Notifications — وقت الـ Frontend
-- [ ] ⏳ Google OAuth E2E — وقت الـ Frontend
 
 ---
 
@@ -610,7 +650,7 @@ TourGuide.sln
 - [x] Webhook URL حُط في Paymob Dashboard ✅
   - URL: https://tourguidee.runasp.net/api/payments/webhook
   - Integration ID: 5853399
-- [ ] ⏳ E2E Test — أول ما يكون في يوزرات حقيقيين
+- [x] Webhook E2E tested ✅
 
 ---
 
@@ -621,7 +661,37 @@ TourGuide.sln
 - [x] Authorized Redirect URIs:
   - http://localhost:4200
   - https://tourguidee.runasp.net/signin-google
-- [ ] ⏳ E2E Test — وقت صفحة الـ Login في الـ Frontend
+- [x] E2E tested with Frontend ✅
+
+---
+
+## ⚠️ Production Checklist (لما الـ Frontend يتحط على Vercel)
+
+```csharp
+// Program.cs CORS — أضف Vercel URL
+WithOrigins("http://localhost:4200", "https://your-app.vercel.app")
+```
+
+```json
+// appsettings.json
+"Frontend": { "BaseUrl": "https://your-app.vercel.app" }
+```
+
+```
+// Google Console
+Authorized JavaScript origins: add Vercel URL
+Authorized redirect URIs:      add Vercel URL/signin-google
+```
+
+```
+// Paymob Dashboard → Response URL
+https://your-app.vercel.app/payment/callback
+```
+
+```csharp
+// EmailService.cs → SendNewMessageEmailAsync
+// غير href="http://localhost:4200/chat" → href="https://your-app.vercel.app/chat"
+```
 
 ---
 
@@ -656,3 +726,7 @@ TourGuide.sln
 | ✅ | Done |
 | ⚠️ | Has Issue |
 | ⏳ | Pending — بعد الرفع / الـ Frontend |
+
+---
+
+> 🎉 **Backend Complete — 36/37 done! الـ 37 بس CORS بتاع Vercel لما الـ Frontend يتنشر**

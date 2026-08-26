@@ -122,4 +122,35 @@ public class EmailService : IEmailService
 
         return SendAsync(toEmail, toName, $"{icon} Rihla — New Notification", html);
     }
+
+    public Task SendNewMessageEmailAsync(string toEmail, string toName, string senderName, string messagePreview)
+    {
+        var html = $"""
+            <div style="font-family:sans-serif;max-width:600px;margin:auto">
+              <div style="background:#C85C3A;padding:24px;text-align:center">
+                <h1 style="color:white;margin:0">Rihla</h1>
+              </div>
+              <div style="padding:32px;background:#FAF8F5">
+                <p style="font-size:18px">💬 Hi {toName},</p>
+                <p style="font-size:16px;color:#1A2340">
+                  You have a new message from <strong>{senderName}</strong>:
+                </p>
+                <div style="background:white;border-left:4px solid #C85C3A;padding:16px;
+                            border-radius:4px;margin:16px 0;color:#1A2340;font-style:italic">
+                  "{messagePreview}"
+                </div>
+                <a href="http://localhost:4200/chat" 
+                   style="background:#C85C3A;color:white;padding:12px 24px;
+                          text-decoration:none;border-radius:6px;display:inline-block;margin-top:8px">
+                  Reply Now
+                </a>
+              </div>
+              <div style="padding:16px;text-align:center;color:#6B7280;font-size:12px">
+                © 2025 Rihla — You're receiving this because you have an account on Rihla.
+              </div>
+            </div>
+            """;
+
+        return SendAsync(toEmail, toName, "💬 New Message on Rihla", html);
+    }
 }

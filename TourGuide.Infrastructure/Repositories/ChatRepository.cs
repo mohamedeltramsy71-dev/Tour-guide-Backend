@@ -18,6 +18,7 @@ public class ChatRepository : IChatRepository
     {
         return await _context.Bookings
             .Include(b => b.Tourist)
+            // ✅ Include GuideProfile.User عشان الـ Guide يتعرف عليه
             .Include(b => b.GuideProfile).ThenInclude(g => g.User)
             .Include(b => b.Messages)
             .Where(b => b.TouristId == userId || b.GuideProfile.UserId == userId)
@@ -28,6 +29,7 @@ public class ChatRepository : IChatRepository
     public async Task<Booking?> GetBookingWithGuideAsync(int bookingId)
     {
         return await _context.Bookings
+            // ✅ Include GuideProfile عشان التحقق من الـ UserId يشتغل
             .Include(b => b.GuideProfile)
             .FirstOrDefaultAsync(b => b.Id == bookingId);
     }
@@ -37,7 +39,8 @@ public class ChatRepository : IChatRepository
         return await _context.Messages
             .Include(m => m.Sender)
             .Where(m => m.BookingId == bookingId)
-            .OrderByDescending(m => m.CreatedAt)
+            // ✅ Ascending عشان الرسايل تظهر من الأقدم للأحدث
+            .OrderBy(m => m.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

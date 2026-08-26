@@ -1,5 +1,6 @@
 ﻿using TourGuide.Application.DTOs.Chat;
 using TourGuide.Application.Interfaces;
+using TourGuide.Domain.Entities;
 using TourGuide.Domain.Exceptions;
 using TourGuide.Domain.Interfaces;
 
@@ -66,11 +67,25 @@ public class ChatService : IChatService
 
     public async Task<int> GetUnreadCountAsync(string userId)
     {
-        var bookingIds = (await _unitOfWork.Repository<TourGuide.Domain.Entities.Booking>()
+        var bookingIds = (await _unitOfWork.Repository<Booking>()
             .FindAsync(b => b.TouristId == userId || b.GuideProfile.UserId == userId))
             .Select(b => b.Id)
             .ToList();
 
         return await _unitOfWork.Chat.GetUnreadCountAsync(bookingIds, userId);
+    }
+
+    public async Task MarkMessagesAsReadAsync(int bookingId, string userId)
+    {
+        var messages = await _unitOfWork.Repository<Message>()
+            .FindAsync(m => m.BookingId == bookingId && m.SenderId != userId && !m.IsRead);
+
+        foreach (var message in messages)
+        {
+            message.IsRead = true;
+            _unitOfWork.Repository<Message>().Update(message);
+        }
+
+        await _unitOfWork.SaveChangesAsync();
     }
 }

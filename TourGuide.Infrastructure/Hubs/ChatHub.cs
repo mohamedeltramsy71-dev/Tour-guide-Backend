@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using TourGuide.Application.Interfaces;
 using TourGuide.Domain.Entities;
 using TourGuide.Infrastructure.Data;
 
@@ -10,31 +13,24 @@ namespace TourGuide.Infrastructure.Hubs;
 public class ChatHub : Hub
 {
     private readonly AppDbContext _context;
+    private readonly IEmailService _emailService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ChatHub(AppDbContext context)
+    public ChatHub(
+        AppDbContext context,
+        IEmailService emailService,
+        UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _emailService = emailService;
+        _userManager = userManager;
     }
 
     public override async Task OnConnectedAsync()
     {
         var userId = Context.UserIdentifier!;
-
-        // إضافة اليوزر لـ group خاص بيه
         await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{userId}");
-
-        // إضافة اليوزر لكل booking groups بتاعته
-        var bookingIds = await _context.Bookings
-            .Where(b => b.TouristId == userId || b.GuideProfile.UserId == userId)
-            .Select(b => b.Id)
-            .ToListAsync();
-
-        foreach (var bookingId in bookingIds)
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"booking_{bookingId}");
-
-        // إخبار الـ group إن اليوزر ده أونلاين
         await Clients.Others.SendAsync("UserOnline", userId);
-
         await base.OnConnectedAsync();
     }
 
@@ -45,34 +41,77 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
+    public async Task JoinBookingGroup(int bookingId)
+    {
+        var userId = Context.UserIdentifier!;
+
+        var booking = await _context.Bookings
+            .Include(b => b.GuideProfile)
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+        if (booking is null) return;
+
+        var isParticipant = booking.TouristId == userId || booking.GuideProfile.UserId == userId;
+        if (!isParticipant) return;
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"booking_{bookingId}");
+    }
+
     public async Task SendMessage(string receiverId, string content, int bookingId)
     {
         var senderId = Context.UserIdentifier!;
 
-        // save to DB
+        var booking = await _context.Bookings
+            .Include(b => b.GuideProfile)
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+        if (booking is null) return;
+
+        var isParticipant = booking.TouristId == senderId || booking.GuideProfile.UserId == senderId;
+        if (!isParticipant) return;
+
         var message = new Message
         {
             SenderId = senderId,
             BookingId = bookingId,
             Content = content,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
         };
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
+
+        var sender = await _context.Users.FindAsync(senderId);
 
         var dto = new
         {
             message.Id,
             message.Content,
             message.SenderId,
+            SenderName = sender?.FullName ?? string.Empty,
             message.BookingId,
-            message.CreatedAt,
+            CreatedAt = message.CreatedAt.ToString("o"),
             message.IsRead
         };
 
-        // إرسال للـ booking group كله
         await Clients.Group($"booking_{bookingId}").SendAsync("ReceiveMessage", dto);
+
+        // بعت email للـ receiver لو مش online
+        var receiver = await _userManager.FindByIdAsync(receiverId);
+        if (receiver != null && !string.IsNullOrEmpty(receiver.Email))
+        {
+            var isReceiverOnline = Context.GetHttpContext()?.RequestServices
+                .GetService<IHubContext<ChatHub>>() != null;
+
+            // fire and forget
+            _ = _emailService.SendNewMessageEmailAsync(
+                receiver.Email,
+                receiver.FullName ?? "User",
+                sender?.FullName ?? "Someone",
+                content.Length > 100 ? content[..100] + "..." : content
+            );
+        }
     }
 
     public async Task MarkAsRead(int messageId)

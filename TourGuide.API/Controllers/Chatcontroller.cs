@@ -40,4 +40,12 @@ public class ChatController : ControllerBase
         var count = await _chatService.GetUnreadCountAsync(userId);
         return Ok(new { unreadCount = count });
     }
+
+    [HttpPut("{bookingId}/read")]
+    public async Task<IActionResult> MarkAsRead(int bookingId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        await _chatService.MarkMessagesAsReadAsync(bookingId, userId);
+        return NoContent();
+    }
 }

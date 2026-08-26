@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using TourGuide.Application.DTOs.CustomTrip;
 using TourGuide.Application.DTOs.Guide;
 using TourGuide.Application.Interfaces;
@@ -48,9 +49,17 @@ public class CustomTripService : ICustomTripService
 
     public async Task<List<GuideListDto>> GetAvailableGuidesAsync(AvailableGuidesRequest request)
     {
-        var guides = await _uow.Repository<GuideProfile>()
-            .FindAsync(g => g.IsApproved && g.IsAvailable && !g.IsSuspended &&
-                            g.CoveredCities.Any(gc => gc.CityId == request.CityId));
+        var allGuides = await _uow.Repository<GuideProfile>()
+            .FindWithNestedIncludeAsync(
+                g => g.IsApproved && g.IsAvailable && !g.IsSuspended,
+                q => q.Include(g => g.User)
+                      .Include(g => g.CoveredCities)
+                          .ThenInclude(gc => gc.City)
+            );
+
+        var guides = allGuides
+            .Where(g => g.CoveredCities.Any(gc => gc.CityId == request.CityId))
+            .ToList();
 
         var busyBookings = await _uow.Repository<Booking>()
             .FindAsync(b =>
@@ -64,6 +73,7 @@ public class CustomTripService : ICustomTripService
             .Where(g => !busyGuideIds.Contains(g.Id))
             .Select(g => new GuideListDto
             {
+                GuideProfileId = g.Id,
                 UserId = g.UserId,
                 FullName = g.User.FullName,
                 AvatarUrl = g.User.AvatarUrl,

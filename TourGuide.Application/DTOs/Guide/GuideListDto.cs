@@ -11,4 +11,5 @@ public class GuideListDto
     public List<string> Languages { get; set; } = [];
     public List<string> CoveredCities { get; set; } = [];
     public bool IsAvailable { get; set; }
+    public int GuideProfileId { get; set; }
 }

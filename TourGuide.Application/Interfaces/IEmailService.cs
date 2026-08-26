@@ -9,4 +9,5 @@ public interface IEmailService
     Task SendGuideRejectionEmailAsync(string email, string fullName, string reason);
     Task SendGuideApprovalEmailAsync(string email, string fullName);
     Task SendNotificationEmailAsync(string email, string fullName, string message, NotificationType type);
+    Task SendNewMessageEmailAsync(string toEmail, string toName, string senderName, string messagePreview);
 }
