@@ -7,6 +7,17 @@
 > **https://tourguidee.runasp.net**
 > Swagger UI: https://tourguidee.runasp.net/swagger/index.html
 
+## 🌐 Frontend URL (Production)
+> **https://tour-guide-frontend-sable.vercel.app/**
+
+---
+
+## 🔑 Super Admin Credentials
+```
+Email    : admin@tourguide.com
+Password : Admin@123456
+```
+
 ---
 
 ## 🗂️ Project Structure
@@ -291,7 +302,7 @@ TourGuide.sln
 | EmailService — SendNotificationEmailAsync HTML template | `EmailService.cs` |
 | IEmailService — SendNewMessageEmailAsync added | `IEmailService.cs` |
 | EmailService — SendNewMessageEmailAsync implemented | `EmailService.cs` |
-| EmailService — IConfiguration inject + _frontendBaseUrl dynamic | `EmailService.cs` ← NEW |
+| EmailService — IConfiguration inject + _frontendBaseUrl dynamic | `EmailService.cs` |
 | ServiceCollectionExtensions — INotificationPushService registered | `ServiceCollectionExtensions.cs` |
 | ChatHub.OnConnectedAsync — user_{userId} group فقط (شيل DB query) | `ChatHub.cs` |
 | ChatHub.JoinBookingGroup — method جديدة بيناديها الـ Frontend | `ChatHub.cs` |
@@ -310,11 +321,11 @@ TourGuide.sln
 | AdminService — Bug Fix: TopCities NullReference على p.City | `AdminService.cs` |
 | AdminService — Bug Fix: GuideName join مع UserManager | `AdminService.cs` |
 | AdminController — GET + DELETE `/api/admin/users/{id}` added | `AdminController.cs` |
-| Program.cs CORS — Vercel URL added | `Program.cs` ← NEW |
-| appsettings.json — Frontend BaseUrl → Vercel URL | `appsettings.json` ← NEW |
-| appsettings.Development.json — Frontend BaseUrl → localhost | `appsettings.Development.json` ← NEW |
-| Google Console — Vercel URL في Origins + Redirect URIs | Google Console ← NEW |
-| Paymob Dashboard — Response URL → Vercel /payment/callback | Paymob Dashboard ← NEW |
+| Program.cs CORS — Vercel URL added | `Program.cs` |
+| appsettings.json — Frontend BaseUrl → Vercel URL | `appsettings.json` |
+| appsettings.Development.json — Frontend BaseUrl → localhost | `appsettings.Development.json` |
+| Google Console — Vercel URL في Origins + Redirect URIs | Google Console |
+| Paymob Dashboard — Response URL → Vercel /payment/callback | Paymob Dashboard |
 
 ---
 
@@ -344,7 +355,7 @@ TourGuide.sln
     "RefreshTokenExpiryDays": 7
   },
   "Frontend": {
-    "BaseUrl": "https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app"
+    "BaseUrl": "https://tour-guide-frontend-sable.vercel.app"
   },
   "Google": { "ClientId": "..." },
   "Cloudinary": { "CloudName": "dp1po0xxf", "ApiKey": "...", "ApiSecret": "..." },
@@ -370,7 +381,7 @@ TourGuide.sln
 ```csharp
 WithOrigins(
     "http://localhost:4200",
-    "https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app"
+    "https://tour-guide-frontend-sable.vercel.app"
 )
 ```
 
@@ -382,14 +393,14 @@ WithOrigins(
 ```
 http://localhost:4200
 https://tourguidee.runasp.net
-https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app
+https://tour-guide-frontend-sable.vercel.app
 ```
 
 **Authorized Redirect URIs:**
 ```
 http://localhost:4200
 https://tourguidee.runasp.net/signin-google
-https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app/signin-google
+https://tour-guide-frontend-sable.vercel.app/signin-google
 ```
 
 ---
@@ -403,7 +414,7 @@ https://tourguidee.runasp.net/api/payments/webhook
 
 **Response URL (Callback):**
 ```
-https://tour-guide-frontend-mr0sgqofo-mohamedeltramsy71-devs-projects.vercel.app/payment/callback
+https://tour-guide-frontend-sable.vercel.app/payment/callback
 ```
 
 ---
@@ -432,3 +443,4 @@ CVV         : 123
 ---
 
 > 🎉 **Backend Complete — 41/41 done! المشروع اتنشر بالكامل على Production ✅**
+ENDOFFILE
