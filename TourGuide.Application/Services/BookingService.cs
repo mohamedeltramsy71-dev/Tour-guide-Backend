@@ -224,6 +224,7 @@ public class BookingService : IBookingService
 
     private static BookingDto MapToDto(Booking b) => new()
     {
+        GuideUserId = b.GuideProfile?.UserId ?? string.Empty,
         Id = b.Id,
         StartDate = b.StartDate,
         NumberOfPersons = b.NumberOfPersons,

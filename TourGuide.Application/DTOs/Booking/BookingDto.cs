@@ -19,6 +19,7 @@ public class BookingDto
 
     // Guide info
     public int GuideProfileId { get; set; }
+    public string GuideUserId { get; set; } = string.Empty;
     public string GuideName { get; set; } = string.Empty;
     public string? GuideAvatar { get; set; }
 
